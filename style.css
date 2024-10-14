@@ -1,0 +1,48 @@
+body {
+    background-image:url('./img/Fondo1.png');
+    background-repeat : no-repeat;
+    background-attachment : fixed;
+    background-position : center;
+}
+div.bg-primary {
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+.grid_1_4{
+    text-align: center;
+    width: 100%;
+    
+}
+.btn-group{
+    text-align: center;
+    width: 100%; 
+}
+div.titulo{
+    display: flex;
+    text-align: center;
+    border: 2px;
+    padding:2px;
+    margin-left: 1pc;
+    margin-right: 3px;
+}
+div.botones{
+    
+    text-align: center;
+    border: 2px;
+    padding:2px;
+    margin-left: 1pc;
+    margin-right: 5px;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+.btn-primary{
+    padding: 7px 20px;
+    border: 1px;
+    width: 100%;
+}
+.bt-info{
+    padding:10px 5px;
+}
