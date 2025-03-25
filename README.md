@@ -1,7 +1,7 @@
-<h1 align="center"> Gestor de documentos -Área DESARROLLO </h1>
+<h1 align="center"> Gestor de documentos </h1>
   
 
-Este proyecto es un gestor de documentos web diseñado para el Área de DESARROLLO, con el objetivo de centralizar y facilitar la organización y acceso a documentos importantes. Permite la gestión de enlaces a documentos y la personalización de menús desplegables para una navegación eficiente.
+Este proyecto es un gestor de documentos web diseñado con el objetivo de centralizar y facilitar la organización y acceso a documentos importantes de google Drive. Permite la gestión de enlaces a documentos y la personalización de menús desplegables para una navegación eficiente.
 
 ## Características Principales:
 
