@@ -1,5 +1,5 @@
 <h1 align="center">
-    <img src="./img/nombre-del-icono.png" alt="Icono del gestor" style="height: 30px; vertical-align: middle; margin-right: 10px;">
+    <img src="./img/GestorICONO.png" alt="Icono del gestor" style="height: 30px; vertical-align: middle; margin-right: 10px;">
     Gestor de documentos
 </h1>
   
