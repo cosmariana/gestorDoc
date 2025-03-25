@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="./img/Cba.png">
+    <title>Gestor</title>
+</head>
+<body>
+    <!-- Encabezado con título y botón -->
+    <header class="text-white p-3 shadow">
+        <div class="container" style="display: flex; align-items: center; justify-content: flex-end;">
+            <h1 class="m-0">Gestor de documentos Área DESARROLLO</h1>
+            <button class="btn btn-success" onclick="showAddLinkModal()" style="margin-left: 20px;">Agregar nuevo enlace</button>
+        </div>
+    </header>
+
+   <!-- <div class="container mt-5">
+        <div class="titulo d-flex align-items-center justify-content-between">
+            <h1 class="text-white  p-3 rounded shadow">Gestor de documentos Área DESARROLLO</h1>
+            <button class="btn btn-success ms-3" onclick="showAddLinkModal()">Agregar nuevo enlace</button>
+        </div>
+    </div>-->
+    
+
+    
+        <div class="botones">
+            <div class="row">
+                <!-- Primer grupo de botones -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="grid_1_4">
+                        <div class="btn-group">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Correos OWA
+                            </button>
+                            <ul class="dropdown-menu" id="linksList1">
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="loadDocument('https://correo.cba.gov.ar/owa/#path=/mail')">OWA personal</a>
+                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="loadDocument('https://correo.cba.gov.ar/owa/desarrollosistemas.mindh@cba.gov.ar/?offline=disabled#path=/mail')">Desarrollosistemas.mindh</a>
+                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Segundo grupo de botones -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="grid_1_4">
+                        <div class="btn-group">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                Enlaces docs RUNNA
+                            </button>
+                            <ul class="dropdown-menu" id="linksList2">
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="loadDocument('https://docs.google.com/document/d/1Y6ewuhxpmjSfIKIB8mI8GgJwelG62KhPLnvff48lFOk/edit?tab=t.0')">MANUAL Runna externo</a>
+                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="loadDocument('https://docs.google.com/document/d/1mkJ7tQt9hsKpDjTrYakvATGapnmV3OO_IDhKdUgaNp8/edit?pli=1#heading=h.xakz3yut599u')">Roles varios</a>
+                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Tercer grupo de botones -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="grid_1_4">
+                        <div class="btn-group">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
+                                CRM
+                            </button>
+                            <ul class="dropdown-menu" id="linksList3">
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="loadDocument('https://docs.google.com/document/d/1v6XyRDMLF-iN54AIlSgJTCBwAWErMdMrJXlw4I9d5gg/edit')">Minuta reunión 03/2024</a>
+                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="loadDocument('https://docs.google.com/document/d/1sjCZv5RSNVhnx9oYRsyvDWIflvovCugFhI2xmAdSUgk/edit')">Minuta reunión 04/2024</a>
+                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Cuarto grupo de botones -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="grid_1_4">
+                        <div class="btn-group">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton4" data-bs-toggle="dropdown" aria-expanded="false">Reportero Runna</button>
+                            <ul class="dropdown-menu" id="linksList4">
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="loadDocument('https://docs.google.com/document/d/1lrqbtcQ7G0_Hq1zUk1qSnz2KExrZyF2qH-6buS2crXE/edit')">Requerimientos reportero</a>
+                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- Sección del iframe -->
+        <div class="documento mt-3">
+            <iframe id="documentViewer" 
+                    width="100%" 
+                    height="600" 
+                    style="border:none;"></iframe>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Función para cargar el documento en el iframe
+        function loadDocument(url) {
+            document.getElementById('documentViewer').src = url;
+        }
+
+        // Función para eliminar un enlace
+        function deleteLink(button) {
+            const confirmDelete = confirm("¿Estás seguro de que deseas eliminar este enlace?");
+            if (confirmDelete) {
+                const linkItem = button.parentElement;
+                linkItem.remove();
+                alert("¡Enlace eliminado correctamente!");
+            }
+        }
+    </script>
+    <script>
+        function showAddLinkModal() {
+            // Crear un cuadro de diálogo para ingresar la información
+            const modalContent = `
+                <div id="addLinkModal" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 5px; width: 300px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
+                    <label for="dropdownSelection">Selecciona el desplegable:</label>
+                    <select id="dropdownSelection">
+                        <option value="linksList1">Correos OWA</option>
+                        <option value="linksList2">Enlaces docs RUNNA</option>
+                        <option value="linksList3">CRM</option>
+                        <option value="linksList4">Reportero Runna</option>
+                    </select>
+                    <label for="linkName">Nombre del enlace:</label>
+                    <input type="text" id="linkName" placeholder="Ej: Manual de Usuario">
+                    <label for="linkURL">URL del enlace:</label>
+                    <input type="text" id="linkURL" placeholder="Ej: https://ejemplo.com">
+                    <button id="Agregar" onclick="addLink()">Guardar</button>
+                    <button id="Cancelar" onclick="closeModal()">Cancelar</button>
+                </div>
+            `;
+    
+            // Insertar el modal en el body
+            const modal = document.createElement('div');
+            modal.innerHTML = modalContent;
+            document.body.appendChild(modal);
+        }
+    
+        function closeModal() {
+            const modal = document.getElementById('addLinkModal');
+            if (modal) modal.remove();
+        }
+    
+        function addLink() {
+            const dropdownSelection = document.getElementById('dropdownSelection').value;
+            const linkName = document.getElementById('linkName').value;
+            const linkURL = document.getElementById('linkURL').value;
+    
+            if (linkName && linkURL) {
+                const selectedList = document.getElementById(dropdownSelection);
+    
+                // Crear un nuevo elemento de lista con enlace y botón de eliminar
+                const newLink = document.createElement('li');
+                newLink.innerHTML = `
+                    <a class="dropdown-item" href="#" onclick="loadDocument('${linkURL}')">${linkName}</a>
+                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                `;
+                selectedList.appendChild(newLink);
+    
+                alert("¡Enlace agregado correctamente!");
+                closeModal();
+            } else {
+                alert("Por favor, completa todos los campos.");
+            }
+        }
+    </script>
+    <footer class="footer mt-5">
+    <div class="container text-center">
+        <p class="m-0 text-white">© 2025 Área DESARROLLO - Ministerio de Desarrollo Humano</p>
+    </div>
+</footer>
+
+</body>
+</html>
