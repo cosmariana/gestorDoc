@@ -24,7 +24,7 @@ Este proyecto es un gestor de documentos web diseñado para el Área de DESARROL
 ![Página principal](img/landing.png)
 
 
-Contacto:
-
-[Mariana Cos] - [cosmarian@gmail.com]
+## Contacto:
+Para cualquier consulta, duda o colaboración, puedes contactarme a través de los siguientes medios:
+- **Email**: cosmarian@gmail.com
 
