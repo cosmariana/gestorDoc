@@ -21,7 +21,7 @@ Este proyecto es un gestor de documentos web diseñado para el Área de DESARROL
 
 ## Capturas de Pantalla
 
-![Página principal](img/capturas"/landing.png)
+![Página principal](img/capturas")
 
 
 Contacto:
