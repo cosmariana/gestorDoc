@@ -3,7 +3,7 @@
 
 Este proyecto es un gestor de documentos web diseñado para el Área de DESARROLLO, con el objetivo de centralizar y facilitar la organización y acceso a documentos importantes. Permite la gestión de enlaces a documentos y la personalización de menús desplegables para una navegación eficiente.
 
-##Características Principales:
+## Características Principales:
 
 1. Gestión de enlaces: Permite agregar y eliminar enlaces de documentos relevantes.
 2. Permite la edición de los nombres de los desplegables existentes.
@@ -11,9 +11,9 @@ Este proyecto es un gestor de documentos web diseñado para el Área de DESARROL
 4. Visualización integrada: Permite visualizar documentos directamente en la aplicación.
 
 
-##Tecnologías Utilizadas:
+## Tecnologías Utilizadas:
 
-###Frontend:
+### Frontend:
 - **HTML5**
 - **CSS5**
 - **JavaScript**
@@ -21,7 +21,7 @@ Este proyecto es un gestor de documentos web diseñado para el Área de DESARROL
 
 ## Capturas de Pantalla
 
-
+![Descripción de la imagen](images/nombre-de-la-imagen.png)
 
 
 Contacto:
