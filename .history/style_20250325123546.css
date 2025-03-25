@@ -1,0 +1,208 @@
+ 
+/* Área principal donde están el iframe y el contenido */
+.main-content {
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.iframe-container {
+    flex-grow: 1;
+    overflow: auto; /* Habilita el scroll si el contenido del iframe es grande */
+    margin: 20px; /* Añade espacio alrededor para mostrar el fondo */
+}
+iframe {
+    width: 100%; /* Ajusta el ancho del iframe */
+    height: 100%; /* Reduce la altura para que el fondo sea visible */
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Añade un sombreado para destacar el iframe */
+    display: block;
+    margin: 0 auto; /* Centra el iframe */
+}
+
+nav {
+    z-index: 1000;
+}
+
+
+body {
+    background-image: url('./img/fondo1.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+   }
+header {
+    background-color: #0a325d;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    
+}
+
+header .btn-success {
+    padding: 5px 10px;
+    font-size: 1.1rem;
+    margin-left: 0;
+}
+
+html {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+}
+.container {
+    margin: 0 !important;
+}
+
+div.bg-primary {
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+.grid_1_4 {
+    text-align: center;
+    width: 100%;
+}
+/*estilo de los desplegables */
+.btn-group {     text-align: center;
+    width: 100%; 
+}
+
+.btn-primary:hover {
+    background-color: #2596be;
+    color: white;
+    border: none;
+}
+
+div.titulo {
+    display: flex;
+    text-align: center;
+    border: 2px solid transparent;
+    padding: 2px;
+    margin-top: 0;
+    margin-left: 1pc;
+    margin-right: 3px;
+}
+
+div.botones {
+    text-align: center;
+    border: 2px solid transparent;
+    padding: 2px;
+    margin-left: 1pc;
+    margin-right: 5px;
+}
+
+
+
+.btn-primary {
+    background: #71c0eb;
+    padding: 7px 20px;
+    border: 10px;
+    border-color: white !important;
+    width: 100%;
+}
+
+.bt-info {
+    padding: 10px 5px;
+}
+
+.dropdown-menu li {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 5px;
+    list-style: none;
+    margin: 0;
+}
+
+.dropdown-item {
+    flex-grow: 1;
+    margin: 0;
+    text-decoration: none;
+    color: #007bff;
+    white-space: nowrap;
+}
+
+.btn-danger {
+    flex-shrink: 0;
+    margin-left: 10px;
+    padding: 1px 5px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+
+ul.dropdown-menu li {
+    padding: 0;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+}
+ul.dropdown-menu {
+    min-width: 300px;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+.titulo h1 {
+    margin-top: 0 !important;
+    font-size: 2rem;
+    text-align: center;
+    color: white;
+    background-color: #0a325d !important; 
+    border-radius: 10px;
+    padding: 5px !important ;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    flex-grow: 1;
+}
+
+.titulo .btn-success {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    margin: 0;
+    padding: 0;
+    margin-left: 0 !important;
+}
+.documento {
+    margin: 0;
+    padding: 0;
+}
+
+.documento iframe {
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+.footer {
+    margin-top: 0 !important;
+    padding: 15px 0;
+    color: white;
+    border-radius: 10px 10px 0 0;
+
+}
+#Agregar, #Guardar, #Cancelar{
+    background-color:#71c0eb;
+    color:black;
+    border: #71c0eb;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 1;
+}

@@ -1,0 +1,209 @@
+body {
+    background-image: url('./img/fondo1.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover; /* Asegúrate de que la imagen cubra toda la pantalla */
+    margin: 0;
+    padding: 0;
+}
+header{
+    background-color: #0a325d;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Agrega un poco de sombra */
+    padding: 20px;
+}
+
+html {
+    margin: 0 !important; /* Quita todos los márgenes predeterminados */
+    padding: 0 !important; /* Quita todos los rellenos predeterminados */
+    box-sizing: border-box; /* Para un control mejor de márgenes y tamaños */
+}
+.container {
+    margin: 0!important;
+   
+
+}
+
+div.bg-primary {
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+.grid_1_4 {
+    text-align: center;
+    width: 100%;
+}
+
+.btn-group {
+    text-align: center;
+    width: 100%; 
+}
+
+.btn-primary:hover {/*Aqui configuro el color al pasar el mouse por encima*/
+    background-color: #2596be; /* Usa el mismo color que el botón normal */
+    color: white; /* Mantén el texto legible */
+    border: none; /* Asegúrate de que no haya bordes adicionales */
+}
+
+
+div.titulo {
+    display: flex;
+    text-align: center;
+    border: 2px solid transparent; /* Para evitar bordes invasivos */
+    padding: 2px;
+    margin-top: 0;
+    margin-left: 1pc;
+    margin-right: 3px;
+}
+
+div.botones {
+    text-align: center;
+    border: 2px solid transparent;
+    padding: 2px;
+    margin-left: 1pc;
+    margin-right: 5px;
+}
+
+iframe {
+    width: 100%; /* Asegúrate de que ocupe todo el ancho disponible */
+    height: 600px; /* Altura fija, puedes ajustar este valor */
+    border: none; /* Sin bordes alrededor del iframe */
+    display: block; /* Asegura que no genere espacio extraño */
+    margin: 0 auto; /* Centra el iframe horizontalmente */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Opcional: sombra para destacar */
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.btn-primary {
+    background: #71c0eb;
+    padding: 7px 20px;
+    border: 10px;
+    border-color: white !important;
+    width: 100%;
+}
+
+.bt-info {
+    padding: 10px 5px;
+}
+
+.dropdown-menu li {
+    display: flex; /* Alinea el contenido horizontalmente */
+    align-items: center; /* Centra verticalmente el texto y el botón */
+    flex-wrap: nowrap; /* Evita que el botón salte a una nueva línea */
+    padding: 5px; /* Espaciado interno para un diseño más limpio */
+    list-style: none; /* Quita los estilos de lista por defecto */
+    margin: 0;
+}
+
+.dropdown-item {
+    flex-grow: 1; /* Expande el enlace para ocupar el espacio disponible */
+    margin: 0;
+    text-decoration: none; /* Evita subrayados, opcional */
+    color: #007bff; /* Color del enlace, puedes personalizar */
+    white-space: nowrap; /* Evita que el texto del enlace se corte o salte */
+}
+
+.btn-danger {
+    
+    flex-shrink: 0; /* Evita que el botón se comprima */
+    margin-left: 10px;
+    padding: 1px 5px; /* Tamaño compacto para que se vea mejor junto al enlace */
+    font-size: 0.85rem; /* Ajusta el tamaño de la fuente */
+    white-space: nowrap; /* Evita que el texto del enlace se corte o salte */
+}
+ul.dropdown-menu li {
+    padding: 0; /* Asegúrate de que el contenedor no añada márgenes */
+    margin: 0; /* Elimina márgenes adicionales */
+    border:none; /* sin bordes*/
+    box-shadow: none; /* Opcional: sin sombra */
+}
+ul.dropdown-menu {
+    min-width: 300px; /* Asegura que el desplegable tenga un ancho mínimo */
+    max-width: 100%; /* Impide que se salga del contenedor */
+    padding: 0; /* Quita el espacio interno innecesario */
+    margin: 0; /* Sin márgenes adicionales */
+    border: none; /* Quita bordes predeterminados */
+}
+/* Título más profesional */
+.titulo h1 {
+    margin-top: 0 !important; /* Elimina el margen superior */
+    font-size: 2rem; /* Ajusta el tamaño de la fuente */
+    text-align: center; /* Centra el texto */
+    color: white; /* Texto blanco */
+    background-color: #0a325d !important; 
+    border-radius: 10px; /* Bordes redondeados */
+    padding: 5px !important ; /* Espaciado interno */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
+    
+    flex-grow: 1; /* Permite que el título ocupe más espacio */
+    
+}
+
+/* Botón alineado al lado */
+.titulo .btn-success {
+    padding: 10px 15px; /* Ajusta el tamaño del botón */
+    font-size: 0.9rem; /* Fuente más compacta */
+    border-radius: 5px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra opcional */
+}
+
+.titulo {
+    display: flex; /* Asegura que el título y el botón estén en la misma línea */
+    align-items: center; /* Centra los elementos verticalmente */
+    justify-content: space-between; /* Espaciado entre el título y el botón */
+    margin-bottom: 20px; /* Espaciado inferior */
+    margin: 0;
+    padding: 0;
+    margin-left: 0 !important;
+}
+.documento {
+    margin: 0; /* Elimina cualquier margen alrededor del contenedor del iframe */
+    padding: 0; /* Elimina cualquier relleno alrededor del iframe */
+}
+
+.documento iframe {
+    margin: 0; /* Elimina márgenes externos del iframe */
+    padding: 0; /* Elimina rellenos internos */
+    display: block; /* Evita espacios generados por elementos en línea */
+}
+
+.footer {
+    margin-top: 0 !important; /* Asegúrate de eliminar cualquier margen superior */
+    padding: 15px 0; /* Mantén el relleno interno del footer */
+    background-color: #0a325d ; /* Color del fondo */
+    color: white; /* Texto blanco */
+    border-radius: 10px 10px 0 0; /* Redondea solo en la parte superior */
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2); /* Sombra en la parte superior */
+}
+#Agregar{
+    background-color:#71c0eb;
+    color:black;
+    border: #71c0eb;
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer;
+    padding: 10px 15px; /* Espaciado interno */
+    margin-bottom: 0px;
+
+}
+#Agregar:hover {
+    background-color:aquamarine; /* Color más oscuro al pasar el mouse */
+}
+
+
+#Cancelar {
+    background-color: #71c0eb;
+    color: black;
+    border: #71c0eb;
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer;
+    padding: 10px 15px; /* Espaciado interno */
+    margin-top: 0;
+
+}
+#Cancelar:hover{
+    background-color:aquamarine;
+}
