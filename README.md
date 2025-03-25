@@ -1,7 +1,7 @@
-<h1 align="LEFT">
+<h2 align="LEFT">
     <img src="./img/GestorICONO.png" alt="Icono del gestor" style="height: 50px; vertical-align: middle; margin-right: 10px;">
     Gestor de documentos
-</h1>
+</h2>
   
 
 Este proyecto es un gestor de documentos web diseñado con el objetivo de centralizar y facilitar la organización y acceso a documentos importantes de google Drive. Permite la gestión de enlaces a documentos y la personalización de menús desplegables para una navegación eficiente.
