@@ -1,30 +1,3 @@
- 
-/* Área principal donde están el iframe y el contenido */
-.main-content {
-    flex-grow: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-.iframe-container {
-    flex-grow: 1;
-    overflow: auto; /* Habilita el scroll si el contenido del iframe es grande */
-    margin: 20px; /* Añade espacio alrededor para mostrar el fondo */
-}
-iframe {
-    width: 100%; /* Ajusta el ancho del iframe */
-    height: 100%; /* Reduce la altura para que el fondo sea visible */
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Añade un sombreado para destacar el iframe */
-    display: block;
-    margin: 0 auto; /* Centra el iframe */
-}
-
-nav {
-    z-index: 1000;
-}
-
-
 body {
     background-image: url('./img/fondo1.png');
     background-repeat: no-repeat;
@@ -33,22 +6,9 @@ body {
     background-size: cover;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-   }
+}
 header {
     background-color: #0a325d;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    
-}
-
-header .btn-success {
-    padding: 5px 10px;
-    font-size: 1.1rem;
-    margin-left: 0;
 }
 
 html {
@@ -70,8 +30,9 @@ div.bg-primary {
     text-align: center;
     width: 100%;
 }
-/*estilo de los desplegables */
-.btn-group {     text-align: center;
+
+.btn-group {
+    text-align: center;
     width: 100%; 
 }
 
@@ -99,7 +60,18 @@ div.botones {
     margin-right: 5px;
 }
 
+iframe {
+    width: 100%;
+    height: 600px;
+    border: none;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+::-webkit-scrollbar {
+    display: none;
+}
 
 .btn-primary {
     background: #71c0eb;
@@ -137,8 +109,6 @@ div.botones {
     font-size: 0.85rem;
     white-space: nowrap;
 }
-
-
 ul.dropdown-menu li {
     padding: 0;
     margin: 0;
@@ -194,15 +164,15 @@ ul.dropdown-menu {
 .footer {
     margin-top: 0 !important;
     padding: 15px 0;
+    background-color: #0a325d ;
     color: white;
-    background-color:#03080c !important
-
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
 }
-#Agregar, #Guardar, #Cancelar{
+#Agregar{
     background-color:#71c0eb;
     color:black;
     border: #71c0eb;
     border-radius: 5px;
     cursor: pointer;
     padding: 1;
-}
