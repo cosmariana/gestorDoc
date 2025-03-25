@@ -1,4 +1,4 @@
-<h2 align="LEFT">
+<h2 align="LEFT" style="font-size: 2.5em;">
     <img src="./img/GestorICONO.png" alt="Icono del gestor" style="height: 50px; vertical-align: middle; margin-right: 10px;">
     Gestor de documentos
 </h2>
