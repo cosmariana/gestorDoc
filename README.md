@@ -7,7 +7,7 @@
 Este proyecto es un gestor de documentos web diseñado por Carla Arevalo, con el objetivo de centralizar y facilitar la organización y acceso a documentos importantes de google Drive. La versión original fue diseñada para facilitar el acceso a recursos organizativos mediante una interfaz sencilla basada en Bootstrap.
 La presente versión incorpora mejoras visuales, funcionales y de experiencia de usuario, manteniendo el espíritu del desarrollo original.
 
-##⚖️ Propiedad Intelectual
+⚖️ Propiedad Intelectual
 El diseño base, estructura de navegación y organización de contenidos pertenecen a Carla, quien conserva la autoría intelectual del proyecto original. Esta adaptación se realiza con fines de mejora técnica y funcional, respetando la lógica y propósito del sistema inicial.
 
 ## Características Originales
