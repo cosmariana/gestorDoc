@@ -206,3 +206,19 @@ ul.dropdown-menu {
     cursor: pointer;
     padding: 1;
 }
+
+/* estilo boton importar y exportar */
+.btn-nav {
+  background: #71c0eb;       /* mismo color que btn-primary */
+  padding: 5px 10px;         /* más compacto */
+  border: 1px solid white;   /* borde fino */
+  width: auto;               /* que se ajuste al contenido */
+  font-size: 0.85rem;        /* texto más chico */
+}
+
+.btn-nav:hover {
+  background: #4480a3; /* mismo color que normal */
+  color: #fff;
+  border: 1px solid #fff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3); /* somra al pasar el mouse */
+}
