@@ -28,6 +28,8 @@ El diseño base, estructura de navegación y organización de contenidos pertene
 - Persistencia de cambios mediante localStorage, permitiendo que las personalizaciones se mantengan entre sesiones.
 - Modularización del código para una estructura más limpia y mantenible.
 - Incorporación de íconos visuales con Flaticon para enriquecer la interfaz.
+- NUEVA FUNCIONALIDAD Exportar e Importar enlaces: La aplicación permite sincronizar configuraciones personales entre distintas computadoras mediante archivos JSON.
+
 
 
 ## Características Principales de la interfaz con las mejoras realizadas:
@@ -36,7 +38,13 @@ El diseño base, estructura de navegación y organización de contenidos pertene
 2. Permite la edición de los nombres de los desplegables existentes.
 3. Interfaz intuitiva: Diseño limpio y fácil de usar, enfocado en la productividad.
 4. Visualización integrada: Permite visualizar documentos directamente en la aplicación.
+5. Exportar e Importar enlaces:
 
+Exportar: genera un archivo enlaces.json con los enlaces guardados en el localStorage del navegador. Este archivo se descarga en la computadora (o en la ubicación que el navegador tenga configurada para guardar descargas), y funciona como un respaldo personal.
+
+Importar: permite cargar ese archivo en otra computadora. Al hacerlo, la aplicación lo guarda en el localStorage de esa máquina, replicando la configuración original.
+
+Nota: cada usuario mantiene su propia configuración. El archivo exportado es un backup personal y no afecta a otros usuarios. Este procedimiento manual asegura que, aunque uses varias PCs, puedas mantener la misma lista de enlaces en todas ellas.
 
 ## Tecnologías Utilizadas:
 

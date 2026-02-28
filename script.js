@@ -191,4 +191,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     });
+   // Exportar enlaces guardados en localStorage
+function exportData() {
+  const data = localStorage.getItem("misEnlaces"); // usa la misma clave que ya usás
+  if (!data) {
+    alert("No hay datos para exportar");
+    return;
+  }
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "enlaces.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Importar enlaces desde archivo JSON
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    localStorage.setItem("misEnlaces", e.target.result);
+
+    // Mostrar el modal de confirmación
+    const modal = new bootstrap.Modal(document.getElementById('importConfirmModal'));
+    modal.show();
+  };
+  reader.readAsText(file);
+}
+
+function exportData() {
+  const data = localStorage.getItem("misEnlaces");
+  if (!data) {
+    alert("No hay datos para exportar");
+    return;
+  }
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "enlaces.json";
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // Mostrar modal de confirmación
+  const modal = new bootstrap.Modal(document.getElementById('exportConfirmModal'));
+  modal.show();
+}
+
+ 
 });
