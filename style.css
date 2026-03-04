@@ -193,11 +193,18 @@ ul.dropdown-menu {
 
 .footer {
     margin-top: 0 !important;
-    padding: 15px 0;
+    padding: 5px 0;
     color: white;
     background-color:#03080c !important
-
+    
 }
+
+#appVersion {
+    color: #ffffff !important; 
+    font-weight: bold !important;
+    margin-left: 10px;
+}
+
 #Agregar, #Guardar, #Cancelar{
     background-color:#71c0eb;
     color:black;
