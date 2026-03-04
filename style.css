@@ -193,11 +193,18 @@ ul.dropdown-menu {
 
 .footer {
     margin-top: 0 !important;
-    padding: 15px 0;
+    padding: 5px 0;
     color: white;
     background-color:#03080c !important
-
+    
 }
+
+#appVersion {
+    color: #ffffff !important; 
+    font-weight: bold !important;
+    margin-left: 10px;
+}
+
 #Agregar, #Guardar, #Cancelar{
     background-color:#71c0eb;
     color:black;
@@ -205,4 +212,20 @@ ul.dropdown-menu {
     border-radius: 5px;
     cursor: pointer;
     padding: 1;
+}
+
+/* estilo boton importar y exportar */
+.btn-nav {
+  background: #71c0eb;       /* mismo color que btn-primary */
+  padding: 5px 10px;         /* más compacto */
+  border: 1px solid white;   /* borde fino */
+  width: auto;               /* que se ajuste al contenido */
+  font-size: 0.85rem;        /* texto más chico */
+}
+
+.btn-nav:hover {
+  background: #4480a3; /* mismo color que normal */
+  color: #fff;
+  border: 1px solid #fff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3); /* somra al pasar el mouse */
 }

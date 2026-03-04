@@ -1,19 +1,30 @@
-//Función que carga documentos en el iframe
+// =============================================================================
+// 1. CONFIGURACIÓN GLOBAL
+// =============================================================================
+const APP_VERSION = "v1.1.2";
+
+
+// RECUERDA: La clave debajo es la que termina en "h-VA" que creaste hoy
+const API_KEY = "AIzaSyBp6Nlj18Rm3ugRMU45cbWh8z67giOvvWc"; 
+
+// Función que carga documentos en el iframe
 function loadDocument(url) {
     document.getElementById('documentViewer').src = url;
 }
 
-// Función para cargar el documento en el iframe
-function loadDocument(url) {
-    document.getElementById('documentViewer').src = url;
-}
+// =============================================================================
+// 2. GESTIÓN DE ENLACES (ESTRUCTURA ORIGINAL)
+// =============================================================================
 
 // Función para eliminar un enlace
 function deleteLink(button) {
     const confirmDelete = confirm("¿Estás seguro de que deseas eliminar este enlace?");
     if (confirmDelete) {
-        const linkItem = button.parentElement; // <li>
-        const linkName = linkItem.querySelector('a').innerText;
+        const linkItem = button.parentElement; // El <li>
+        const linkAnchor = linkItem.querySelector('a');
+        const linkName = linkAnchor.innerText;
+        const linkURL = linkAnchor.getAttribute('onclick').match(/'([^']+)'/)[1]; 
+        
         const dropdownMenu = linkItem.closest('.dropdown-menu');
         const dropdownButton = dropdownMenu.closest('.nav-item').querySelector('.dropdown-toggle');
         const dropdownId = dropdownButton.id;
@@ -23,172 +34,367 @@ function deleteLink(button) {
 
         // Eliminar del localStorage
         let storedLinks = JSON.parse(localStorage.getItem(dropdownId + '_links')) || [];
-        storedLinks = storedLinks.filter(link => link.name !== linkName);
+        storedLinks = storedLinks.filter(link => !(link.name === linkName && link.url === linkURL));
+        
         localStorage.setItem(dropdownId + '_links', JSON.stringify(storedLinks));
 
         alert("¡Enlace eliminado correctamente!");
     }
 }
 
-// Función para mostrar el modal de agregar enlace
+// Función para mostrar el modal de AGREGAR enlace
 function showAddLinkModal() {
-    const dropdownOptions = {
-        dropdownMenuButton1: 'Correos OWA',
-        dropdownMenuButton2: 'Enlaces docs RUNNA',
-        dropdownMenuButton3: 'CRM',
-        dropdownMenuButton4: 'Reportero Runna'
-    };
-
+    const ids = ['dropdownMenuButton1', 'dropdownMenuButton2', 'dropdownMenuButton3', 'dropdownMenuButton4'];
     let selectOptions = '';
-    Object.keys(dropdownOptions).forEach(id => {
-        const name = localStorage.getItem(id) || dropdownOptions[id];
+    ids.forEach(id => {
+        const button = document.getElementById(id);
+        const name = button ? button.innerText : id; 
         selectOptions += `<option value="${id}">${name}</option>`;
     });
 
     const modalContent = `
-        <div id="addLinkModal" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 5px; width: 300px; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
-            <label for="dropdownSelection">Selecciona el desplegable:</label>
-            <select id="dropdownSelection">
-                ${selectOptions}
-            </select>
-            <label for="linkName">Nombre del enlace:</label>
+        <div id="addLinkModal" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 5px; width: 320px; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            <label><b>Categoría:</b></label>
+            <select id="dropdownSelection">${selectOptions}</select>
+            
+            <label><b>Nombre del enlace:</b></label>
             <input type="text" id="linkName" placeholder="Ej: Manual de Usuario">
-            <label for="linkURL">URL del enlace:</label>
-            <input type="text" id="linkURL" placeholder="Ej: https://ejemplo.com">
-            <button id="Agregar" onclick="addLink()">Guardar</button>
-            <button id="Cancelar" onclick="closeModal()">Cancelar</button>
+            
+            <label><b>Etiquetas/Temas (IA):</b></label>
+            <input type="text" id="linkTags" placeholder="Ej: Meta, chatbot, técnico">
+            
+            <label><b>URL del enlace:</b></label>
+            <input type="text" id="linkURL" placeholder="https://...">
+            
+            <button class="btn btn-success mt-2" onclick="addLink()">Guardar Enlace</button>
+            <button class="btn btn-secondary mt-1" onclick="closeModal()">Cancelar</button>
         </div>
     `;
 
     const modal = document.createElement('div');
+    modal.id = "addLinkModalContainer";
     modal.innerHTML = modalContent;
     document.body.appendChild(modal);
 }
 
-// Función para cerrar el modal de agregar enlace
 function closeModal() {
-    const modal = document.getElementById('addLinkModal');
+    const modal = document.getElementById('addLinkModalContainer');
     if (modal) modal.remove();
 }
 
-// Función para agregar un nuevo enlace
 function addLink() {
     const dropdownSelection = document.getElementById('dropdownSelection').value;
     const linkName = document.getElementById('linkName').value;
     const linkURL = document.getElementById('linkURL').value;
+    const linkTags = document.getElementById('linkTags').value; // Capturamos etiquetas
 
     if (linkName && linkURL) {
-        // Encontrar el botón del desplegable
         const dropdownButton = document.getElementById(dropdownSelection);
-        // Buscar el <li> contenedor
-        const parentLi = dropdownButton.closest('.nav-item');
-        // Buscar el <ul> con los enlaces
-        const dropdownMenu = parentLi.querySelector('.dropdown-menu');
+        const menu = dropdownButton.closest('.nav-item').querySelector('.dropdown-menu');
 
-        if (dropdownMenu) {
-            const newLink = document.createElement('li');
-            newLink.innerHTML = `
-                <a class="dropdown-item" href="#" onclick="loadDocument('${linkURL}')">${linkName}</a>
-                <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
-            `;
-            dropdownMenu.appendChild(newLink);
-
-            // Guardar en localStorage
+        if (menu) {
+            // Guardar en localStorage incluyendo el nuevo campo 'tags'
             const storedLinks = JSON.parse(localStorage.getItem(dropdownSelection + '_links')) || [];
-            storedLinks.push({ name: linkName, url: linkURL });
+            storedLinks.push({ 
+                name: linkName, 
+                url: linkURL, 
+                tags: linkTags // Guardamos los tags aquí
+            });
             localStorage.setItem(dropdownSelection + '_links', JSON.stringify(storedLinks));
 
-            alert("¡Enlace agregado correctamente!");
-            closeModal();
-        } else {
-            alert("No se pudo encontrar el menú del desplegable.");
+            // Recargar la interfaz para que aparezca el botón de eliminar y el link
+            location.reload(); 
         }
     } else {
-        alert("Por favor, completa todos los campos.");
+        alert("Por favor, completa Nombre y URL.");
     }
 }
 
-// Función para mostrar el modal de edición
-function showEditDropdownModal() {
-    const dropdownOptions = {
-        dropdownMenuButton1: 'Correos OWA',
-        dropdownMenuButton2: 'Enlaces docs RUNNA',
-        dropdownMenuButton3: 'CRM',
-        dropdownMenuButton4: 'Reportero Runna'
-    };
+// =============================================================================
+// 3. EDICIÓN DE CATEGORÍAS
+// =============================================================================
 
+function showEditDropdownModal() {
+    const ids = ['dropdownMenuButton1', 'dropdownMenuButton2', 'dropdownMenuButton3', 'dropdownMenuButton4'];
     let selectOptions = '';
-    Object.keys(dropdownOptions).forEach(id => {
-        const name = localStorage.getItem(id) || dropdownOptions[id];
+    ids.forEach(id => {
+        const name = document.getElementById(id)?.innerText || id;
         selectOptions += `<option value="${id}">${name}</option>`;
     });
 
     const modalContent = `
-        <div id="editDropdownModal" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 5px; width: 300px; position: fixed; top: 25%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
-            <label for="dropdownSelection">Selecciona el desplegable:</label>
-            <select id="dropdownSelection">
+        <div id="editDropdownModal" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 8px; width: 400px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <h5>Configuración de Categoría</h5>
+            
+            <label>Selecciona el desplegable:</label>
+            <select id="dropdownSelectionEdit" onchange="renderLinksEditor(this.value)">
+                <option value="">-- Selecciona --</option>
                 ${selectOptions}
             </select>
-            <label for="dropdownNewName">Nuevo nombre:</label>
-            <input type="text" id="dropdownNewName" placeholder="Ej: Nuevo nombre">
-            <button id="Guardar" onclick="updateDropdownName()">Guardar</button>
-            <button id="Cancelar" onclick="closeEditDropdownModal()">Cancelar</button>
+
+            <label>Nuevo nombre de la categoría:</label>
+            <input type="text" id="dropdownNewName" placeholder="Ej: Recursos Humanos">
+
+            <div id="linksEditorContainer" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                </div>
+
+            <button class="btn btn-primary mt-2" onclick="updateFullCategory()">Guardar Cambios</button>
+            <button class="btn btn-secondary mt-1" onclick="closeEditDropdownModal()">Cancelar</button>
         </div>
     `;
 
     const modal = document.createElement('div');
+    modal.id = "editDropdownModalContainer";
     modal.innerHTML = modalContent;
     document.body.appendChild(modal);
 }
 
-// Función para cerrar el modal de edición
+function renderLinksEditor(id) {
+    const container = document.getElementById('linksEditorContainer');
+    if (!id) {
+        container.innerHTML = "";
+        return;
+    }
+
+    const enlaces = JSON.parse(localStorage.getItem(id + '_links')) || [];
+    let html = "<h6>Enlaces y Etiquetas IA:</h6>";
+    
+    if (enlaces.length === 0) {
+        html += "<p><small>No hay enlaces en esta categoría.</small></p>";
+    } else {
+        enlaces.forEach((link, index) => {
+            html += `
+                <div class="mb-2">
+                    <input type="text" class="form-control form-control-sm mb-1" value="${link.name}" id="edit-name-${index}" placeholder="Nombre del enlace">
+                    <input type="text" class="form-control form-control-sm" value="${link.tags || ''}" id="edit-tags-${index}" placeholder="Etiquetas (IA)">
+                </div>
+            `;
+        });
+    }
+    container.innerHTML = html;
+    
+    // De paso, ponemos el nombre actual de la categoría en el input de arriba
+    document.getElementById('dropdownNewName').value = document.getElementById(id).innerText;
+}
 function closeEditDropdownModal() {
-    const modal = document.getElementById('editDropdownModal');
+    const modal = document.getElementById('editDropdownModalContainer');
     if (modal) modal.remove();
 }
 
-// Función para actualizar el nombre del desplegable
+function updateFullCategory() {
+    const id = document.getElementById('dropdownSelectionEdit').value;
+    const newCatName = document.getElementById('dropdownNewName').value;
+    
+    if (!id) return alert("Selecciona una categoría");
+
+    // 1. Guardar nuevo nombre de categoría
+    if (newCatName) {
+        localStorage.setItem(id, newCatName);
+        document.getElementById(id).innerText = newCatName;
+    }
+
+    // 2. Guardar cambios en enlaces y etiquetas
+    let enlaces = JSON.parse(localStorage.getItem(id + '_links')) || [];
+    enlaces = enlaces.map((link, index) => {
+        return {
+            ...link,
+            name: document.getElementById(`edit-name-${index}`).value,
+            tags: document.getElementById(`edit-tags-${index}`).value
+        };
+    });
+    
+    localStorage.setItem(id + '_links', JSON.stringify(enlaces));
+    
+    alert("¡Cambios guardados con éxito!");
+    location.reload(); // Recargamos para que los cambios se vean en los menús
+}
+
 function updateDropdownName() {
-    const dropdownSelection = document.getElementById('dropdownSelection').value;
+    const dropdownSelection = document.getElementById('dropdownSelectionEdit').value;
     const newName = document.getElementById('dropdownNewName').value;
 
     if (newName) {
         localStorage.setItem(dropdownSelection, newName);
         document.getElementById(dropdownSelection).innerText = newName;
-
-        alert(`El nombre del desplegable se ha cambiado a "${newName}"`);
+        alert(`El nombre se ha cambiado a "${newName}"`);
         closeEditDropdownModal();
-    } else {
-        alert("Por favor, ingresa un nuevo nombre para el desplegable.");
     }
 }
 
-// Inicializar nombres al cargar la página
+// =============================================================================
+// 4. PERSISTENCIA (DOM CONTENT LOADED)
+// =============================================================================
+
 document.addEventListener('DOMContentLoaded', () => {
-    const dropdownOptions = {
-        dropdownMenuButton1: 'Correos OWA',
-        dropdownMenuButton2: 'Enlaces docs RUNNA',
-        dropdownMenuButton3: 'CRM',
-        dropdownMenuButton4: 'Reportero Runna'
+    const dropdownIds = ["dropdownMenuButton1", "dropdownMenuButton2", "dropdownMenuButton3", "dropdownMenuButton4"];
+    
+    dropdownIds.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            const savedName = localStorage.getItem(id);
+            if (savedName) btn.innerText = savedName;
+
+            const menu = btn.closest('.nav-item').querySelector('.dropdown-menu');
+            const storedLinks = JSON.parse(localStorage.getItem(id + '_links')) || [];
+            
+            menu.innerHTML = ""; 
+            storedLinks.forEach(link => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a class="dropdown-item" href="#" onclick="loadDocument('${link.url}')">${link.name}</a>
+                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                `;
+                menu.appendChild(li);
+            });
+        }
+    });
+    // --- NUEVA LÓGICA PARA LA VERSIÓN ---
+    const versionLabel = document.getElementById('appVersion');
+    if (versionLabel) {
+        // Usamos un separador para que no se pegue al texto anterior
+        versionLabel.innerText = ` | Versión: ${APP_VERSION}`;
+            }
+});
+
+// =============================================================================
+// 5. EXPORTAR E IMPORTAR
+// =============================================================================
+
+window.exportData = function() {
+    const backup = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        backup[key] = localStorage.getItem(key);
+    }
+    if (Object.keys(backup).length === 0) return alert("No hay datos");
+
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "enlaces_gestor.json";
+    a.click();
+};
+
+window.importData = function(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            localStorage.clear();
+            Object.keys(data).forEach(key => localStorage.setItem(key, data[key]));
+            const modalElement = document.getElementById('importConfirmModal');
+            if (modalElement) {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            }
+        } catch (err) { alert("Error en el archivo JSON"); }
     };
+    reader.readAsText(file);
+}
 
-    Object.keys(dropdownOptions).forEach(id => {
-        const savedName = localStorage.getItem(id) || dropdownOptions[id];
-        document.getElementById(id).innerText = savedName;
-         // 🔥 NUEVO: restaurar enlaces guardados
-        const storedLinks = JSON.parse(localStorage.getItem(id + '_links')) || [];
-        const dropdownButton = document.getElementById(id);
-        const parentLi = dropdownButton.closest('.nav-item');
-        const dropdownMenu = parentLi.querySelector('.dropdown-menu');
+// =============================================================================
+// 6. SECCIÓN ASISTENTE IA (MODAL Y CONSULTA)
+// =============================================================================
 
-        storedLinks.forEach(link => {
-            const newLink = document.createElement('li');
-            newLink.innerHTML = `
-                <a class="dropdown-item" href="#" onclick="loadDocument('${link.url}')">${link.name}</a>
-                <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
-            `;
-            dropdownMenu.appendChild(newLink);
+// Función para abrir el modal del HTML (ID: iaModal)
+window.abrirModalIA = function() {
+    const modalIA = document.getElementById('iaModal');
+    if (modalIA) {
+        const myModal = new bootstrap.Modal(modalIA);
+        myModal.show();
+    }
+};
+
+// Función para el contexto dinámico
+function prepararContextoIA() {
+    let textoContexto = "Categorías y enlaces actuales:\n";
+    let hayDatos = false;
+
+    for (let i = 1; i <= 4; i++) {
+        const btnId = `dropdownMenuButton${i}`;
+        const nombreCategoria = localStorage.getItem(btnId) || `Categoría ${i}`;
+        const enlaces = JSON.parse(localStorage.getItem(btnId + '_links')) || [];
+        
+        if (enlaces.length > 0) {
+            hayDatos = true;
+            textoContexto += `\n[${nombreCategoria}]:\n`;
+            
+            // EL CAMBIO ESTÁ AQUÍ:
+            enlaces.forEach(link => {
+                // Primero definimos las etiquetas si existen
+                const etiquetas = link.tags ? ` [Etiquetas: ${link.tags}]` : "";
+                // Luego construimos la línea completa
+                textoContexto += `- ${link.name}${etiquetas} (URL: ${link.url})\n`;
+            });
+        }
+    }
+    return hayDatos ? textoContexto : "No hay documentos cargados.";
+}
+
+// Función principal para enviar consulta a Gemini 2.5 Flash
+window.sendIAQuery = async function() {
+    const input = document.getElementById('iaInput');
+    const chat = document.getElementById('iaChatWindow');
+    const userText = input.value.trim();
+    
+    if (!userText) return;
+
+    // Mostrar lo que escribe el usuario
+    chat.innerHTML += `<div class="text-end text-primary mb-2"><b>Tú:</b> ${userText}</div>`;
+    input.value = '';
+
+    const iaMsg = document.createElement('div');
+    iaMsg.className = 'text-start text-success mb-2';
+    iaMsg.innerHTML = "<b>IA:</b> Pensando...";
+    chat.appendChild(iaMsg);
+    chat.scrollTop = chat.scrollHeight;
+
+    try {
+        const contexto = prepararContextoIA();
+        
+        // CAMBIO AQUÍ: Usamos gemini-1.5-flash que tiene cuota garantizada
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ 
+                        text: `Eres un asistente experto en gestión de docuemtos para el Ministerio de Desarrollo Humano. 
+       Tu tono debe ser profesional y servicial. 
+       Si no conoces el nombre del usuario, no inventes uno.
+       Cuando menciones un documento que está en el contexto, proporciona el enlace SIEMPRE en este formato exacto de HTML para que el usuario pueda abrirlo en el visor: 
+       <a href="#" onclick="loadDocument('URL_DEL_DOC'); return false;">NOMBRE_DEL_DOC</a> No uses markdown normal, usa esa etiqueta <a> de HTML.
+
+       REGLAS DE ORO:
+                        1. Usa el "Contexto actual" para responder. Si algo no está ahí, di que no lo encuentras en el sistema.
+                        2. Si el usuario te pregunta quién eres, preséntate como el asistente del Ministerio.
+                        3. Sé amable pero profesional. No asumas nombres de usuario a menos que te lo digan.
+                        4. Si ves que un documento tiene "tags" o "etiquetas", úsalas para saber si ese doc es relevante.
+       Contexto actual de los documentos disponibles: ${contexto}
+                        Pregunta del usuario: ${userText}` 
+                    }]
+                }]
+            })
         });
 
-    });
-});
+        const data = await response.json();
+
+        // Si el servidor responde 429 o error
+        if (data.error) {
+            throw new Error(data.error.message);
+        }
+
+        const respuestaTexto = data.candidates[0].content.parts[0].text;
+        iaMsg.innerHTML = `<b>IA:</b> ${respuestaTexto}`;
+
+    } catch (error) {
+        iaMsg.innerHTML = `<b class="text-danger">IA: Error. Detalle: ${error.message}</b>`;
+        console.error("Error completo:", error);
+    }
+    chat.scrollTop = chat.scrollHeight;
+};
+
