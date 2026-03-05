@@ -4,9 +4,6 @@
 const APP_VERSION = "v1.1.2";
 
 
-// RECUERDA: La clave debajo es la que termina en "h-VA" que creaste hoy
-const API_KEY = "AIzaSyBp6Nlj18Rm3ugRMU45cbWh8z67giOvvWc"; 
-
 // Función que carga documentos en el iframe
 function loadDocument(url) {
     document.getElementById('documentViewer').src = url;
@@ -374,6 +371,13 @@ window.sendIAQuery = async function() {
                         2. Si el usuario te pregunta quién eres, preséntate como el asistente del Ministerio.
                         3. Sé amable pero profesional. No asumas nombres de usuario a menos que te lo digan.
                         4. Si ves que un documento tiene "tags" o "etiquetas", úsalas para saber si ese doc es relevante.
+                        5. SOBRE ESTA APP (Guía de Ayuda): 
+                        Esta aplicación es el "Gestor de Documentos v1.1.2", creada para solucionar el desorden de archivos en Drive y centralizar el acceso rápido a la documentación de la oficina.
+                        - Propósito: Evitar que los documentos se pierdan. Permite tener a mano los links directos de Drive o Web organizados por categorías.
+                        - Visor: Al hacer click en un enlace, el documento se abre en el panel central sin salir de la app.
+                        - Gestión: El usuario puede "Agregar enlace" para guardar sus propios documentos de Drive o "Editar" categorías existentes para mejorar su organización como asi también etiquetas, todo desde los botones de la interfaz.
+                        - Sincronización: Si el usuario cambia de PC, debe usar "Exportar" para bajar un archivo .json con sus links y luego "Importar" en la nueva máquina para recuperar sus enlaces.
+   
        Contexto actual de los documentos disponibles: ${contexto}
                         Pregunta del usuario: ${userText}` 
                     }]
