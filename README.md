@@ -22,13 +22,14 @@ El diseño base, estructura de navegación y organización de contenidos pertene
 - Reemplazo del diseño en columnas por una barra de navegación moderna con menús desplegables.
 - Incorporación de un iframe para visualizar documentos directamente en la página, evitando abrir ventanas externas.
 - Implementación de botones “Agregar enlace” y “Editar”, que permiten gestionar los contenidos de forma dinámica.
-- Funcionalidad para eliminar enlaces con confirmación, directamente desde la interfaz.
-- Posibilidad de editar los nombres de los menús desplegables, personalizando la navegación.
+- Funcionalidad para eliminar enlaces con confirmación, directamente desde la interfaz. 
 - Uso de modales personalizados para agregar y editar enlaces, mejorando la experiencia de usuario.
+- NUEVA FUNCIONALIDAD: El modal de edición ahora permite gestionar de forma masiva tanto los nombres de las categorías como los títulos de cada enlace y sus respectivas etiquetas (tags) para la IA, todo desde una misma interfaz centralizada.
 - Persistencia de cambios mediante localStorage, permitiendo que las personalizaciones se mantengan entre sesiones.
 - Modularización del código para una estructura más limpia y mantenible.
 - Incorporación de íconos visuales con Flaticon para enriquecer la interfaz.
 - NUEVA FUNCIONALIDAD Exportar e Importar enlaces: La aplicación permite sincronizar configuraciones personales entre distintas computadoras mediante archivos JSON.
+- NUEVA FUNCIONALIDAD: Integración de Gemini 2.5 para la asistencia inteligente a cerca de la aplicación
 
 
 
@@ -45,6 +46,8 @@ Exportar: genera un archivo enlaces.json con los enlaces guardados en el localSt
 Importar: permite cargar ese archivo en otra computadora. Al hacerlo, la aplicación lo guarda en el localStorage de esa máquina, replicando la configuración original.
 
 Nota: cada usuario mantiene su propia configuración. El archivo exportado es un backup personal y no afecta a otros usuarios. Este procedimiento manual asegura que, aunque uses varias PCs, puedas mantener la misma lista de enlaces en todas ellas.
+
+6. Asistente IA Integrado: Incorporación de un chatbot basado en Gemini que conoce el contexto de los documentos cargados y permite realizar consultas inteligentes, devolviendo enlaces directos para su visualización.
 
 ## Tecnologías Utilizadas:
 
