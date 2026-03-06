@@ -229,3 +229,199 @@ ul.dropdown-menu {
   border: 1px solid #fff;
   box-shadow: 0 0 6px rgba(0,0,0,0.3); /* somra al pasar el mouse */
 }
+
+/*-------------MODAL IA------------------------------*/
+
+
+
+/* Posicionamiento del modal tipo Chat */
+#iaModal .modal-dialog {
+    position: fixed;
+    bottom: 80px; /* Separación del borde inferior (arriba del botón flotante) */
+    right: 20px;  /* Separación del borde derecho */
+    margin: 0;
+    width: 380px; /* Ancho fijo para que parezca un chat */
+    max-width: 90%;
+}
+
+/* Animación de entrada suave desde abajo */
+#iaModal.fade .modal-dialog {
+    transform: translateY(20px);
+    transition: transform 0.3s ease-out;
+}
+
+#iaModal.show .modal-dialog {
+    transform: translateY(0);
+}
+
+/* Quitamos el fondo oscuro de Bootstrap */
+.modal-backdrop {
+    display: none !important;
+}
+
+/* Ajustamos el contenido para que parezca un widget */
+#iaModal .modal-content {
+    border-radius: 15px;
+    border: 1px solid #28a745; /* Verde Ministerio */
+}
+
+/* Reducimos el alto del chat para que no tape todo */
+#iaChatWindow {
+    height: 350px !important;
+}
+
+/* Botón flotante nuevo */
+#btnFlotanteIA {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+    background-color: #c1c8da;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1050;
+    transition: transform 0.2s;
+
+    /* ACTIVAR LA ANIMACIÓN AQUÍ */
+    animation: pulso-ia 2s infinite; 
+    transition: all 0.3s ease;
+}
+
+#btnFlotanteIA:hover {
+    transform: scale(1.1);
+}
+
+/* LA MAGIA DEL PULSO (ONDA EXPANSIVA) */
+@keyframes pulso-ia {
+    0% {/* 1. Sombra pegada al botón */
+        box-shadow: 0 0 0 0 rgba(57, 82, 190, 0.7); /* Sombra pegada al botón */
+        transform: scale(0.95);
+    }
+    70% {
+        box-shadow: 0 0 0 40px rgba(40, 167, 69, 0); /* La sombra se expande al 40px y se desvanece */
+        transform: scale(1.05); /* El botón aqui crece un poquito más */
+    }
+    100% {/* 3. Vuelve a cero para reiniciar el ciclo */
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+        transform: scale(0.95);
+    }
+}
+
+/* EFECTO EXTRA: Que el robotito se mueva un poco */
+#btnFlotanteIA i {
+    display: inline-block;
+    animation: flotar-suave 3s ease-in-out infinite;
+}
+
+@keyframes flotar-suave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* PAUSAR PULSO AL PASAR EL MOUSE (Opcional) */
+#btnFlotanteIA:hover {
+    animation-play-state: paused;
+    background-color: #24e079;
+}
+
+/* ----------------------------------------------------- */
+/* Ajuste de scrollbar para el chat */
+#iaChatWindow::-webkit-scrollbar {
+    width: 6px;
+}
+#iaChatWindow::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 10px;
+}
+
+/* Efecto al enfocar el input tipo burbuja */
+.input-group:focus-within {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
+}
+
+
+/* ----------------------------------------------------- */
+
+/* Avatar del robot dentro del chat */
+
+/* ----------------------------------------------------- */
+
+.ia-avatar-chat {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Lo hace redondo */
+    object-fit: contain; /* Evita que se deforme */
+    background-color: white; /* Por si la imagen tiene fondo transparente */
+}
+
+/* El botón de enviar (el que era un círculo verde) */
+.btn-enviar-custom {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #f0f2f5; /* Gris clarito como el de CiDi */
+    color: #999; /* Color del icono */
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-enviar-custom:hover {
+    background-color: #e2e6ea;
+    color: #28a745; /* Se pone verde al pasar el mouse */
+}
+
+/* Estilo para el contenedor del input (el óvalo blanco) */
+.chat-input-pill {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 30px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* ----------------------------------------------------- */
+
+/* ESTADO DEL BOTÓN ENVIAR */
+
+/* ----------------------------------------------------- */
+
+/* Estado desactivado (gris) */
+#btnEnviarIA {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #f0f2f5; /* Gris suave */
+    color: #888;
+    border: none;
+    transition: all 0.3s ease;
+    cursor: default;
+    pointer-events: none; /* No deja hacer clic si está vacío */
+}
+
+/* Estado activo (verde y con puntero) */
+#btnEnviarIA.activo {
+    background-color: #28a745; /* Verde Ministerio */
+    color: white;
+    cursor: pointer;
+    pointer-events: auto; /* Habilita el clic */
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* hace que el boton se vea redondo */
+#iaChatWindow img {
+    border-radius: 50% !important;
+    object-fit: cover !important;
+}
