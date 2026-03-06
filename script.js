@@ -297,10 +297,14 @@ window.importData = function(file) {
 
 // Función para abrir el modal del HTML (ID: iaModal)
 window.abrirModalIA = function() {
-    const modalIA = document.getElementById('iaModal');
-    if (modalIA) {
-        const myModal = new bootstrap.Modal(modalIA);
-        myModal.show();
+    const modalElement = document.getElementById('iaModal');
+    const instance = bootstrap.Modal.getOrCreateInstance(modalElement);
+    
+    // Si el modal está visible, lo cerramos. Si no, lo abrimos.
+    if (modalElement.classList.contains('show')) {
+        instance.hide();
+    } else {
+        instance.show();
     }
 };
 
@@ -400,5 +404,47 @@ window.sendIAQuery = async function() {
         console.error("Error completo:", error);
     }
     chat.scrollTop = chat.scrollHeight;
+};
+
+
+// =============================================================================
+// 7. PARA QUE EL BOTON ABRA Y CIERRE MODAL DE IA
+// =============================================================================
+function toggleChat() {
+    const modal = document.getElementById('ia-modal');
+    if (modal.style.display === 'none' || modal.style.display === '') {
+        modal.style.display = 'flex';
+    } else {
+        modal.style.display = 'none';
+    }
+}
+
+// =============================================================================
+// Función para que el botón cambie de verde/gris
+// =============================================================================
+window.checkInputIA = function() {
+    const input = document.getElementById('iaInput');
+    const boton = document.getElementById('btnEnviarIA');
+    
+    if (!input || !boton) return;
+
+    if (input.value.trim().length > 0) {
+        // ACTIVADO: Verde y flecha blanca
+        boton.style.backgroundColor = "#28a745";
+        boton.style.color = "#ffffff";
+    } else {
+        // DESACTIVADO: Gris suave y flecha gris
+        boton.style.backgroundColor = "#f0f2f5";
+        boton.style.color = "#888";
+    }
+};
+
+// Modificación para que el botón vuelva a gris después de enviar
+// Buscá tu función sendIAQuery y agregá esta línea al final:
+const originalSendIAQuery = window.sendIAQuery;
+window.sendIAQuery = async function() {
+    await originalSendIAQuery();
+    // Esto limpia el botón después de mandar el mensaje
+    window.checkInputIA(); 
 };
 
