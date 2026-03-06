@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="./img/GestorICONO.png">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>Gestor de Documentos</title>
     
        
@@ -18,9 +19,9 @@
             <a class="navbar-brand text-wrap" href="#" style="white-space: normal; font-size: 1.2rem; font-weight: bold;">
                 Gestor de Documentos 
             </a>
-            <button id="iaButton" class="btn btn-warning ms-2" style="font-weight: bold;" onclick="abrirModalIA()">
+            <!--<button id="iaButton" class="btn btn-warning ms-2" style="font-weight: bold;" onclick="abrirModalIA()">
             🤖 IA
-        </button>
+        </button>-->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -117,34 +118,66 @@
   </div>
 </div>
 
-<div class="modal fade" id="iaModal" tabindex="-1" aria-labelledby="iaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content shadow-lg">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="iaModalLabel">
-                    <i class="bi bi-robot"></i> Asistente IA - Ministerio de Desarrollo Humano
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="iaModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+            
+            <div class="modal-header bg-white border-bottom-0 pb-0" style="display: block;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="modal-title fw-bold" style="color: #333; font-size: 1.1rem; margin-bottom: 0;">
+                            Asistente GestorDoc
+                        </h5>
+                        <p class="text-muted mb-0" style="font-size: 0.8rem;">
+                            Asistente conversacional con IA generativa
+                        </p>
+                    </div>
+                    <button type="button" class="btn-close" onclick="abrirModalIA()" aria-label="Close"></button>
+                </div>
+                <hr class="my-2" style="opacity: 0.1;">
             </div>
-            <div class="modal-body">
-                <div id="iaChatWindow" class="border rounded p-3 mb-3" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
-                    <div class="text-start text-secondary mb-2">
-                        <small>IA: Hola, soy tu asistente del Ministerio de Desarrollo Humano. ¿en qué puedo ayudarte hoy?</small>
+
+            <div class="modal-body pt-2">
+                <div id="iaChatWindow" class="p-2 mb-3" style="height: 380px; overflow-y: auto; background-color: #ffffff;">
+                    <div class="d-flex mb-3">
+                        <div class="me-2 flex-shrink-0">
+                            <img src="img/bot_4712010.png" alt="IA" 
+                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #eee;">
+                        </div>
+                        <div class="p-3 rounded-3" style="background-color: #f0f2f5; max-width: 80%;">
+                            <small class="d-block fw-bold text-success mb-1">Asistente</small>
+                            <span style="font-size: 0.9rem;">👋 Hola, soy tu asistente del Ministerio. ¿Quieres realizar una consulta? Haré lo mejor para ayudarte.</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="input-group">
-                    <input type="text" id="iaInput" class="form-control" placeholder="Pregúntame sobre tus documentos..." onkeypress="if(event.key === 'Enter') sendIAQuery()">
-                    <button class="btn btn-success" type="button" onclick="sendIAQuery()">
-                        <i class="bi bi-send"></i> Enviar
+                <div class="d-flex align-items-center gap-2 px-1">
+                    <div class="flex-grow-1 shadow-sm" style="border: 1px solid #e0e0e0; border-radius: 30px; padding: 4px 15px; background: white;">
+                        <input type="text" id="iaInput" class="form-control border-0 shadow-none" 
+                               placeholder="Escribime tu consulta acá..." 
+                               oninput="checkInputIA()" 
+                               onkeypress="if(event.key === 'Enter') sendIAQuery()" 
+                               style="font-size: 0.95rem;">
+                    </div>
+                    <button id="btnEnviarIA" class="btn d-flex align-items-center justify-content-center shadow-sm" 
+                            type="button" 
+                            onclick="sendIAQuery()" 
+                            style="width: 42px; height: 42px; border-radius: 50%; background-color: #f0f2f5; color: #888; border: none; transition: 0.3s;">
+                        <i class="bi bi-send-fill"style="font-size: 1.2rem;"></i>
                     </button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <small class="text-muted w-100 text-center">Conectado a Gemini 2.5 Flash</small>
+
+            <div class="text-center pb-2">
+                <small class="text-muted" style="font-size: 0.7rem;">Conectado a Gemini 2.5 Flash</small>
             </div>
         </div>
     </div>
 </div>
+
+<div id="btnFlotanteIA" onclick="abrirModalIA()">
+    <img src="img/bot_4712010.png" alt="IA" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+</div>
+
 </body>
 </html>
