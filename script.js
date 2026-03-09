@@ -354,8 +354,6 @@ window.sendIAQuery = async function() {
 
     try {
         const contexto = prepararContextoIA();
-        
-        // CAMBIO AQUÍ: Usamos gemini-1.5-flash que tiene cuota garantizada
         const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
         const response = await fetch(url, {
@@ -364,25 +362,35 @@ window.sendIAQuery = async function() {
             body: JSON.stringify({
                 contents: [{
                     parts: [{ 
-                        text: `Eres un asistente experto en gestión de docuemtos para el Ministerio de Desarrollo Humano. 
-       Tu tono debe ser profesional y servicial. 
-       Si no conoces el nombre del usuario, no inventes uno.
-       Cuando menciones un documento que está en el contexto, proporciona el enlace SIEMPRE en este formato exacto de HTML para que el usuario pueda abrirlo en el visor: 
-       <a href="#" onclick="loadDocument('URL_DEL_DOC'); return false;">NOMBRE_DEL_DOC</a> No uses markdown normal, usa esa etiqueta <a> de HTML.
+                        text: `Eres un asistente experto en gestión de documentos para el Ministerio de Desarrollo Humano. 
+                        Tu tono debe ser profesional y servicial. 
+                        Fecha y hora actual: ${new Date().toLocaleString()}
 
-       REGLAS DE ORO:
-                        1. Usa el "Contexto actual" para responder. Si algo no está ahí, di que no lo encuentras en el sistema.
-                        2. Si el usuario te pregunta quién eres, preséntate como el asistente del Ministerio.
-                        3. Sé amable pero profesional. No asumas nombres de usuario a menos que te lo digan.
+                        REGLAS DE FORMATO (PARA EVITAR ESTRÉS VISUAL):
+                        1. Usa **negritas** para resaltar nombres de documentos o conceptos clave.
+                        2. NUNCA escribas párrafos largos. Divide la información en frases cortas.
+                        3. Si enumeras elementos, usa listas con viñetas (guiones).
+                        4. Deja un doble salto de línea entre párrafos.
+                        5. Enlaces en formato exacto: <a href="#" onclick="loadDocument('URL_DEL_DOC'); return false;">NOMBRE_DEL_DOC</a>
+                        6. Sé directo y humano. 
+                        7. NO uses frases genéricas como "Estimado usuario", "De acuerdo a su consulta" o "Le informo que".
+
+                        REGLAS DE ORO:
+                        1. Prioriza el 'Contexto actual' para temas de documentos. Para preguntas generales de oficina o fechas, usa la información de 'PROXIMOS FERIADOS' y la 'Fecha actual' proporcionada."
+                        2. SOBRE ESTA APP: "Gestor de Documentos v1.1.2", visor central, exportar/importar .json.
+                        3. No asumas nombres de usuario a menos que te lo digan.
                         4. Si ves que un documento tiene "tags" o "etiquetas", úsalas para saber si ese doc es relevante.
                         5. SOBRE ESTA APP (Guía de Ayuda): 
-                        Esta aplicación es el "Gestor de Documentos v1.1.2", creada para solucionar el desorden de archivos en Drive y centralizar el acceso rápido a la documentación de la oficina.
+                        Esta aplicación es el "Gestor de Documentos v1.1.2", creada por el Área de Desarrollo del Ministerio, para solucionar el desorden de archivos en Drive y centralizar el acceso rápido a la documentación de la oficina.
                         - Propósito: Evitar que los documentos se pierdan. Permite tener a mano los links directos de Drive o Web organizados por categorías.
                         - Visor: Al hacer click en un enlace, el documento se abre en el panel central sin salir de la app.
                         - Gestión: El usuario puede "Agregar enlace" para guardar sus propios documentos de Drive o "Editar" categorías existentes para mejorar su organización como asi también etiquetas, todo desde los botones de la interfaz.
                         - Sincronización: Si el usuario cambia de PC, debe usar "Exportar" para bajar un archivo .json con sus links y luego "Importar" en la nueva máquina para recuperar sus enlaces.
+                        6. Si el usuario solicita funciones técnicas o cambios estructurales, indícale que debe elevar el requerimiento al Área de Desarrollo del Ministerio.
+                        7. PROCEDIMIENTOS: Si un link de Drive no abre, es probable que no sea público. Indicar al usuario que debe ponerlo como 'Lector' para todos.
    
-       Contexto actual de los documentos disponibles: ${contexto}
+
+                        Contexto actual: ${contexto}
                         Pregunta del usuario: ${userText}` 
                     }]
                 }]
@@ -391,20 +399,33 @@ window.sendIAQuery = async function() {
 
         const data = await response.json();
 
-        // Si el servidor responde 429 o error
-        if (data.error) {
-            throw new Error(data.error.message);
-        }
+        if (data.error) throw new Error(data.error.message);
 
         const respuestaTexto = data.candidates[0].content.parts[0].text;
-        iaMsg.innerHTML = `<b>IA:</b> ${respuestaTexto}`;
+
+        // --- PROCESAMIENTO VISUAL DEL TEXTO ---
+        
+        // 1. Convertir **texto** en <b>texto</b> (Negritas)
+        let textoProcesado = respuestaTexto.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+
+        // 2. Convertir asteriscos de lista en viñetas elegantes (•)
+        textoProcesado = textoProcesado.replace(/^\*\s+/gm, "• ");
+        
+        // 3. Limpiar espacios innecesarios
+        textoProcesado = textoProcesado.trim();
+
+        // 4. Inyectar al modal con la clase de respuesta (Asegúrate de tener .ia-response en tu CSS)
+        iaMsg.className = 'text-start mb-3 p-3 rounded-3 shadow-sm'; 
+        iaMsg.style.backgroundColor = "#f8f9fa";
+        iaMsg.style.borderLeft = "4px solid #28a745";
+        iaMsg.style.whiteSpace = "pre-wrap"; // Esto es vital para los saltos de línea
+        
+        iaMsg.innerHTML = `<small class="fw-bold text-success d-block mb-1">Asistente</small>${textoProcesado}`;
 
     } catch (error) {
         iaMsg.innerHTML = `<b class="text-danger">IA: Error. Detalle: ${error.message}</b>`;
         console.error("Error completo:", error);
-    }
-    chat.scrollTop = chat.scrollHeight;
-};
+    }};
 
 
 // =============================================================================
