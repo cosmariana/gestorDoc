@@ -8,6 +8,7 @@
     <link rel="icon" href="./img/GestorICONO.png">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Documentos</title>
     
        
@@ -15,48 +16,46 @@
 <body>
     <!-- Menú de navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
-        <div class="container-fluid">
-            <a class="navbar-brand text-wrap" href="#" style="white-space: normal; font-size: 1.2rem; font-weight: bold;">
-                Gestor de Documentos 
-            </a>
-            <!--<button id="iaButton" class="btn btn-warning ms-2" style="font-weight: bold;" onclick="abrirModalIA()">
-            🤖 IA
-        </button>-->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
-    <ul class="navbar-nav mb-2 mb-lg-0">
-        <li class="nav-item dropdown me-3">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categoría 1</a>
-            <ul class="dropdown-menu"></ul>
-        </li>
-        <li class="nav-item dropdown me-3">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton2" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categoría 2</a>
-            <ul class="dropdown-menu"></ul>
-        </li>
-        <li class="nav-item dropdown me-3">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton3" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categoría 3</a>
-            <ul class="dropdown-menu"></ul>
-        </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton4" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categoría 4</a>
-            <ul class="dropdown-menu"></ul>
-        </li>
-    </ul>
-</div>
-            <div>
-                <button class="btn btn-success me-2" onclick="showAddLinkModal()"><i class="fi fi-rr-add-document"></i> Agregar enlace</button>
-                <button class="btn btn-success" onclick="showEditDropdownModal()"><i class="fi fi-rr-edit"></i> Editar</button>
-                <button class="btn btn-nav me-2" onclick="exportData()"><i class="fi fi-rr-download"></i> Exportar</button>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#" style="font-size: 1.2rem; font-weight: bold;">
+            Gestor de Documentos 
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                <label class="btn btn-nav mb-0">
-                  <i class="fi fi-rr-upload"></i> Importar<input type="file" accept=".json" hidden onchange="importData(this.files[0])">
-                </label>
-
-            </div>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown me-3">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton1" data-bs-toggle="dropdown">Correo</a>
+                    <ul class="dropdown-menu"></ul>
+                </li>
+                <li class="nav-item dropdown me-3">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton2" data-bs-toggle="dropdown">RUNNA</a>
+                    <ul class="dropdown-menu"></ul>
+                </li>
+                <li class="nav-item dropdown me-3">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton3" data-bs-toggle="dropdown">Hospitalarios</a>
+                    <ul class="dropdown-menu"></ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton4" data-bs-toggle="dropdown">Chatbot</a>
+                    <ul class="dropdown-menu"></ul>
+                </li>
+            </ul>
         </div>
-    </nav>
+
+        <div class="d-none d-lg-flex align-items-center">
+            <button class="btn btn-success me-2 btn-nav-custom" onclick="showAddLinkModal()"><i class="fi fi-rr-add-document"></i> Agregar enlace</button>
+            <button class="btn btn-success me-2 btn-nav-custom" onclick="showEditDropdownModal()"><i class="fi fi-rr-edit"></i> Editar</button>
+            <button class="btn btn-info me-2 btn-nav-custom text-white" onclick="exportData()"><i class="fi fi-rr-download"></i> Exportar</button>
+            <label class="btn btn-info btn-nav-custom text-white mb-0">
+                <i class="fi fi-rr-upload"></i> Importar<input type="file" accept=".json" hidden onchange="importData(this.files[0])">
+            </label>
+        </div>
+    </div>
+</nav>
 
     <!-- Contenido principal con iframe -->
     <div class="main-content">

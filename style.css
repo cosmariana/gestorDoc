@@ -114,8 +114,11 @@ div.botones {
 }
 
 .dropdown-menu li {
+    min-width: 280px; /* Un ancho mínimo para que sea cómodo */
+    max-width: 95vw;  /* Que no se salga de la pantalla del celu */
     display: flex;
     align-items: center;
+    justify-content: space-between;
     flex-wrap: nowrap;
     padding: 5px;
     list-style: none;
@@ -127,8 +130,18 @@ div.botones {
     margin: 0;
     text-decoration: none;
     color: #007bff;
-    white-space: nowrap;
+    white-space: normal !important; /* Permite que el texto largo salte de línea */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px !important; /* Más espacio para el dedo */
+    border-bottom: 1px solid #eee;
 }
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
 
 .btn-danger {
     flex-shrink: 0;
@@ -426,4 +439,75 @@ ul.dropdown-menu {
 #iaChatWindow img {
     border-radius: 50% !important;
     object-fit: cover !important;
+}
+
+
+/* --------------------------------------------------- */
+/* --- AJUSTES RESPONSIVE (CELULARES Y TABLETS) --- */
+@media (max-width: 991px) {
+    /* 1. Aseguramos que el contenedor no se desborde */
+    .navbar .container-fluid {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        overflow: hidden;
+    }
+
+    /* 2. Los botones: Ajuste fino para que entren los 4 */
+    .navbar .container-fluid > div:last-child {
+        display: flex !important;
+        flex-direction: row !important; 
+        flex-wrap: nowrap !important;  
+        gap: 2px !important; /* Reducimos el gap al mínimo */
+        justify-content: center !important;
+        width: 100% !important;
+        margin-top: 10px;
+    }
+
+    /* 3. Botones ultra-compactos para móvil */
+    .navbar .btn {
+        padding: 4px 5px !important; /* Mínimo padding */
+        font-size: 10px !important;   /* Bajamos un punto más la letra */
+        flex: 1 1 auto;              /* Permite que se encojan equitativamente */
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Achicamos el icono para ganar espacio */
+    .navbar .btn i {
+        margin-right: 2px !important;
+        font-size: 10px;
+    }
+
+    /* 4. IA y Modales (Se mantienen igual) */
+    #iaChatModal { width: 92% !important; right: 4% !important; bottom: 80px !important; height: 65vh !important; }
+    .btn-floating-ia { width: 55px !important; height: 55px !important; bottom: 15px !important; right: 15px !important; }
+
+    /* AJUSTE PARA EL IFRAME*/
+    /* Ajuste del visor de documentos para que no desborde */
+    .main-content {
+        padding: 0 !important;
+        padding-right: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden;
+    }
+
+    .iframe-container {
+        position: relative;
+        width: 100% !important;
+        height: calc(100vh - 250px); /* Ajusta la altura para que no tape el footer */
+        overflow: hidden;
+    }
+
+    #documentViewer {
+        width: 100% !important;
+        height: 100% !important;
+        border: none;
+    }
 }
