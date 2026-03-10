@@ -6,7 +6,16 @@ const APP_VERSION = "v1.1.2";
 
 // Función que carga documentos en el iframe
 function loadDocument(url) {
-    document.getElementById('documentViewer').src = url;
+    // Si la URL ya viene con algo raro, la cargamos tal cual para no fallar
+    let finalUrl = url;
+    
+    // Solo intentamos el modo preview si es un link de Google Docs estándar
+    if (url.includes('docs.google.com') && url.includes('/edit')) {
+        // Esta es la forma más segura de cambiar a vista previa sin romper el ID del doc
+        finalUrl = url.split('/edit')[0] + '/preview';
+    }
+    
+    document.getElementById('documentViewer').src = finalUrl;
 }
 
 // =============================================================================
@@ -237,9 +246,15 @@ document.addEventListener('DOMContentLoaded', () => {
             menu.innerHTML = ""; 
             storedLinks.forEach(link => {
                 const li = document.createElement('li');
+                // Agregamos d-flex para que el texto y el botón convivan bien
+                li.className = "d-flex align-items-center border-bottom";
                 li.innerHTML = `
-                    <a class="dropdown-item" href="#" onclick="loadDocument('${link.url}')">${link.name}</a>
-                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteLink(this)">Eliminar</button>
+                    <a class="dropdown-item text-wrap" href="#" onclick="loadDocument('${link.url}'); return false;" style="flex-grow: 1; padding:10px;">${link.name}</a>
+                    <button class="btn btn-outline-danger btn-sm me-2" 
+                       onclick="deleteLink(this)" 
+                       style="padding: 2px 5px;">
+                       <i class="fi fi-rr-trash"></i>
+                    </button>
                 `;
                 menu.appendChild(li);
             });
