@@ -62,11 +62,13 @@ Nota: cada usuario mantiene su propia configuración. El archivo exportado es un
 
 ## Capturas de Pantalla
 
-### Versión v1.2.0
-![Página principal v1.2.0](img/landing.png)
+### Versión v1.1.2
+![Página principal v1.1.2](img/landing.png)
 
-### Versión Actual (v1.2.1)
-![Página principal v1.2.1](img/landing_v121.png)
+### Versión Actual (v1.2.0)
+![Página principal v1.2.0](img/v1.2.0.png)
+![Página principal v1.2.0](img/v1.2.0%20-B.png)
+
 
 
 ## Contacto:
