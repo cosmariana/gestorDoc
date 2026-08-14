@@ -3,180 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="./img/GestorICONO.png">
-    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Documentos</title>
     
-       
+    <!-- Bootstrap CSS y Estilos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="./img/GestorICONO.png">
 </head>
 <body>
-    <!-- Menú de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+
+    <!-- Menú de Navegación Superior -->
+    <!-- Menú de Navegación Superior -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow px-3">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#" style="font-size: 1.2rem; font-weight: bold;">
-            Gestor de Documentos 
-        </a>
+        <!-- Botón de Administración a la izquierda -->
+        <button class="btn btn-outline-light me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#panelAdministracion">
+            <i class="bi bi-gear-fill me-1"></i> Administración
+        </button>
+
+        <!-- Título -->
+        <a class="navbar-brand fw-bold me-4" href="#">Gestor de Documentos</a>
         
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#contenidoNavegacion">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item dropdown me-3">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton1" data-bs-toggle="dropdown">Correo</a>
-                    <ul class="dropdown-menu"></ul>
-                </li>
-                <li class="nav-item dropdown me-3">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton2" data-bs-toggle="dropdown">RUNNA</a>
-                    <ul class="dropdown-menu"></ul>
-                </li>
-                <li class="nav-item dropdown me-3">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton3" data-bs-toggle="dropdown">Hospitalarios</a>
-                    <ul class="dropdown-menu"></ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton4" data-bs-toggle="dropdown">Chatbot</a>
-                    <ul class="dropdown-menu"></ul>
-                </li>
-            </ul>
-        </div>
-
-        <div class="d-none d-lg-flex align-items-center">
-            <button class="btn btn-success me-2 btn-nav-custom" onclick="showAddLinkModal()"><i class="fi fi-rr-add-document"></i> Agregar enlace</button>
-            <button class="btn btn-success me-2 btn-nav-custom" onclick="showEditDropdownModal()"><i class="fi fi-rr-edit"></i> Editar</button>
-            <button class="btn btn-info me-2 btn-nav-custom text-white" onclick="exportData()"><i class="fi fi-rr-download"></i> Exportar</button>
-            <label class="btn btn-info btn-nav-custom text-white mb-0">
-                <i class="fi fi-rr-upload"></i> Importar<input type="file" accept=".json" hidden onchange="importData(this.files[0])">
-            </label>
+        <!-- Desplegables CENTRADOS (usando mx-auto) -->
+        <div class="collapse navbar-collapse" id="contenidoNavegacion">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0" id="contenedorDesplegables"></ul>
         </div>
     </div>
 </nav>
 
-    <!-- Contenido principal con iframe -->
-    <div class="main-content">
-        <div class="iframe-container">
-            <iframe id="documentViewer" src="" title="Visor de documentos"></iframe>
+    <!-- Panel Lateral Deslizable Izquierdo Ajustado (Ancho reducido: 280px) -->
+    <div class="offcanvas offcanvas-start bg-dark text-white shadow" tabindex="-1" id="panelAdministracion" style="width: 280px;">
+        <div class="offcanvas-header border-bottom border-secondary py-2">
+            <h6 class="offcanvas-title fw-bold m-0"><i class="bi bi-sliders me-1"></i> Panel de Control</h6>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column gap-2 p-3">
+            <small class="text-muted fw-bold" style="font-size: 0.75rem;">GESTIÓN DE DOCUMENTOS</small>
+            
+            <button class="btn btn-success btn-sm text-start py-2" onclick="mostrarModalAgregarEnlace()">
+                <i class="fi fi-rr-add-document me-2"></i> Agregar Enlace
+            </button>
+            
+            <button class="btn btn-primary btn-sm text-start py-2" onclick="mostrarModalCrearDesplegable()">
+                <i class="bi bi-folder-plus me-2"></i> Crear Desplegable
+            </button>
+            
+            <button class="btn btn-outline-light btn-sm text-start py-2" onclick="mostrarModalEditarDesplegable()">
+                <i class="fi fi-rr-edit me-2"></i> Editar / Eliminar
+            </button>
+
+            <hr class="border-secondary my-2">
+
+            <small class="text-muted fw-bold" style="font-size: 0.75rem;">RESPALDO DE DATOS</small>
+            
+            <button class="btn btn-info btn-sm text-white text-start py-2" onclick="exportarCopiaSeguridad()">
+                <i class="fi fi-rr-download me-2"></i> Exportar (JSON)
+            </button>
+
+            <label class="btn btn-outline-info btn-sm text-start py-2 mb-0 cursor-pointer">
+                <i class="fi fi-rr-upload me-2"></i> Importar (JSON)
+                <input type="file" accept=".json" hidden onchange="importarCopiaSeguridad(this.files[0])">
+            </label>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer bg-dark text-white">
-        <div class="container text-center">
-        <span>© 2025 Área DESARROLLO - Ministerio de Desarrollo Humano</span>
-        <span id="appVersion" ></span>
+    <!-- Contenido Principal con Visor Iframe y Cartel Centrado -->
+    <div class="main-content position-relative" style="height: calc(100vh - 100px);">
+        
+        <!-- Cartel de Bienvenida Centrado, Blanco y Destacado -->
+        <div id="cartelBienvenida" class="position-absolute top-50 start-50 translate-middle p-4 bg-white text-dark rounded-3 shadow-lg border text-center" style="z-index: 1000; max-width: 480px; width: 90%; display: none;">
+            <div class="mb-2">
+                <i class="bi bi-info-circle-fill text-primary display-5"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">¡Bienvenido/a al Gestor!</h5>
+            <p class="text-secondary small mb-3">
+                Sus listas están vacías por el momento. Puede personalizar y agregar sus propios documentos haciendo clic en el botón <b>Administración</b> en la esquina superior izquierda.
+            </p>
+            <button class="btn btn-primary btn-sm px-4 fw-bold" onclick="ocultarCartelBienvenida()">Entendido</button>
         </div>
-    </footer>
 
-    
+        <div class="iframe-container h-100">
+            <iframe id="visorDocumentos" class="w-100 h-100 border-0" src="" title="Visor de documentos"></iframe>
+        </div>
+    </div>
+
+    <!-- Pie de página Centrado -->
+    <!-- Pie de página Centrado -->
+<footer class="footer bg-dark text-white py-2 border-top border-secondary w-100 position-relative">
+    <div class="container-fluid text-center">
+        <small class="d-block text-center w-100 m-0">
+            © 2025 Área DESARROLLO - Ministerio de Desarrollo Humano <span id="versionAplicacion"></span>
+        </small>
+    </div>
+</footer>
+
+    <!-- Scripts del proyecto -->
     <script src="config.js"></script>
-    <!-- Scripts: no quitarlo de aqui -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script src="script.js"></script>
 
-    <!-- --------------------------------------------------------------------- -->
-    <!-- Modal de confirmación de importación -->
-<div class="modal fade" id="importConfirmModal" tabindex="-1" aria-labelledby="importConfirmLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="importConfirmLabel">Importación exitosa</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        Los enlaces se importaron correctamente. Ahora la aplicación se actualizará para mostrar los cambios.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="location.reload()">Aceptar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ------------------------------------------------------------------------ -->
-<!-- Modal de confirmación de exportación -->
-<div class="modal fade" id="exportConfirmModal" tabindex="-1" aria-labelledby="exportConfirmLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="exportConfirmLabel">Exportación realizada</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        El archivo <strong>enlaces.json</strong> se descargó correctamente en tu computadora.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="iaModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
-    <div class="modal-dialog">
-        <div class="modal-content shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
-            
-            <div class="modal-header bg-white border-bottom-0 pb-0" style="display: block;">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h5 class="modal-title fw-bold" style="color: #333; font-size: 1.1rem; margin-bottom: 0;">
-                            Asistente GestorDoc
-                        </h5>
-                        <p class="text-muted mb-0" style="font-size: 0.8rem;">
-                            Asistente conversacional con IA generativa
-                        </p>
-                    </div>
-                    <button type="button" class="btn-close" onclick="abrirModalIA()" aria-label="Close"></button>
-                </div>
-                <hr class="my-2" style="opacity: 0.1;">
-            </div>
-
-            <div class="modal-body pt-2">
-                <div id="iaChatWindow" class="p-2 mb-3" style="height: 380px; overflow-y: auto; background-color: #ffffff;">
-                    <div class="d-flex mb-3">
-                        <div class="me-2 flex-shrink-0">
-                            <img src="img/bot_4712010.png" alt="IA" 
-                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #eee;">
+    <!-- Modal para el Chat del Asistente de IA -->
+    <div class="modal fade" id="iaModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+        <div class="modal-dialog">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header bg-white border-bottom-0 pb-0" style="display: block;">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="modal-title fw-bold" style="color: #333; font-size: 1.1rem; margin-bottom: 0;">
+                                Asistente GestorDoc
+                            </h5>
+                            <p class="text-muted mb-0" style="font-size: 0.8rem;">
+                                Asistente conversacional con IA generativa
+                            </p>
                         </div>
-                        <div class="p-3 rounded-3" style="background-color: #f0f2f5; max-width: 80%;">
-                            <small class="d-block fw-bold text-success mb-1">Asistente</small>
-                            <span style="font-size: 0.9rem;">👋 Hola, soy tu asistente del Ministerio. ¿Quieres realizar una consulta? Haré lo mejor para ayudarte.</span>
+                        <button type="button" class="btn-close" onclick="abrirModalIA()" aria-label="Cerrar"></button>
+                    </div>
+                    <hr class="my-2" style="opacity: 0.1;">
+                </div>
+
+                <div class="modal-body pt-2">
+                    <div id="ventanaChatIA" class="p-2 mb-3" style="height: 380px; overflow-y: auto; background-color: #ffffff;">
+                        <div class="d-flex mb-3">
+                            <div class="me-2 flex-shrink-0">
+                                <img src="img/bot_4712010.png" alt="IA" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #eee;">
+                            </div>
+                            <div class="p-3 rounded-3" style="background-color: #f0f2f5; max-width: 80%;">
+                                <small class="d-block fw-bold text-success mb-1">Asistente</small>
+                                <span style="font-size: 0.9rem;">👋 Hola, soy tu asistente del Ministerio. ¿Quieres realizar una consulta? Haré lo mejor para ayudarte.</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="d-flex align-items-center gap-2 px-1">
-                    <div class="flex-grow-1 shadow-sm" style="border: 1px solid #e0e0e0; border-radius: 30px; padding: 4px 15px; background: white;">
-                        <input type="text" id="iaInput" class="form-control border-0 shadow-none" 
-                               placeholder="Escribime tu consulta acá..." 
-                               oninput="checkInputIA()" 
-                               onkeypress="if(event.key === 'Enter') sendIAQuery()" 
-                               style="font-size: 0.95rem;">
+                    
+                    <div class="d-flex align-items-center gap-2 px-1">
+                        <div class="flex-grow-1 shadow-sm" style="border: 1px solid #e0e0e0; border-radius: 30px; padding: 4px 15px; background: white;">
+                            <input type="text" id="entradaTextoIA" class="form-control border-0 shadow-none" 
+                                   placeholder="Escribime tu consulta acá..." 
+                                   oninput="verificarEntradaTextoIA()" 
+                                   onkeypress="if(event.key === 'Enter') enviarConsultaIA()" 
+                                   style="font-size: 0.95rem;">
+                        </div>
+                        <button id="botonEnviarIA" class="btn d-flex align-items-center justify-content-center shadow-sm" 
+                                type="button" 
+                                onclick="enviarConsultaIA()" 
+                                style="width: 42px; height: 42px; border-radius: 50%; background-color: #f0f2f5; color: #888; border: none; transition: 0.3s;">
+                            <i class="bi bi-send-fill" style="font-size: 1.2rem;"></i>
+                        </button>
                     </div>
-                    <button id="btnEnviarIA" class="btn d-flex align-items-center justify-content-center shadow-sm" 
-                            type="button" 
-                            onclick="sendIAQuery()" 
-                            style="width: 42px; height: 42px; border-radius: 50%; background-color: #f0f2f5; color: #888; border: none; transition: 0.3s;">
-                        <i class="bi bi-send-fill"style="font-size: 1.2rem;"></i>
-                    </button>
                 </div>
-            </div>
 
-            <div class="text-center pb-2">
-                <small class="text-muted" style="font-size: 0.7rem;">Conectado a Gemini 2.5 Flash</small>
+                <div class="text-center pb-2">
+                    <small class="text-muted" style="font-size: 0.7rem;">Conectado a Gemini 2.5 Flash</small>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div id="btnFlotanteIA" onclick="abrirModalIA()">
-    <img src="img/bot_4712010.png" alt="IA" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-</div>
+    <!-- Botón flotante para abrir la IA -->
+    <div id="btnFlotanteIA" onclick="abrirModalIA()">
+        <img src="img/bot_4712010.png" alt="IA" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+    </div>
 
 </body>
 </html>
