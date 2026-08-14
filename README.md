@@ -10,7 +10,7 @@ La presente versión incorpora mejoras visuales, funcionales y de experiencia de
 ⚖️ Propiedad Intelectual
 El diseño base, estructura de navegación y organización de contenidos pertenecen a Carla, quien conserva la autoría intelectual del proyecto original. Esta adaptación se realiza con fines de mejora técnica y funcional, respetando la lógica y propósito del sistema inicial.
 
-## Características Originales
+## Características Originales (version 1.0.0)
 - Diseño basado en Bootstrap 5
 - Organización por categorías de enlaces 
 - Enlaces estáticos a documentos y plataformas externas
@@ -19,6 +19,7 @@ El diseño base, estructura de navegación y organización de contenidos pertene
 
 ## Adaptaciones y mejoras realizadas por mí:
 
+- Reestructuracion del gestor: se pone boton panel de control para manejar las herramientas de la app.. se agrega mensaje bienvenida y NUEVA FUNCIONALIDAD: se agrega modal crud de categorias.
 - Reemplazo del diseño en columnas por una barra de navegación moderna con menús desplegables.
 - Incorporación de un iframe para visualizar documentos directamente en la página, evitando abrir ventanas externas.
 - Implementación de botones “Agregar enlace” y “Editar”, que permiten gestionar los contenidos de forma dinámica.
@@ -49,6 +50,8 @@ Nota: cada usuario mantiene su propia configuración. El archivo exportado es un
 
 6. Asistente IA Integrado: Incorporación de un chatbot basado en Gemini que conoce el contexto de los documentos cargados y permite realizar consultas inteligentes, devolviendo enlaces directos para su visualización.
 
+7. Panel de Control y CRUD de Categorías: Centralización de herramientas en un panel de administración, incorporando modales interactivos para la creación, edición y eliminación de desplegables y enlaces.
+
 ## Tecnologías Utilizadas:
 
 ### Frontend:
@@ -59,7 +62,11 @@ Nota: cada usuario mantiene su propia configuración. El archivo exportado es un
 
 ## Capturas de Pantalla
 
-![Página principal](img/landing.png)
+### Versión v1.2.0
+![Página principal v1.2.0](img/landing.png)
+
+### Versión Actual (v1.2.1)
+![Página principal v1.2.1](img/landing_v121.png)
 
 
 ## Contacto:
