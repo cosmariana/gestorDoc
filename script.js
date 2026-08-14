@@ -1,377 +1,560 @@
 // =============================================================================
-// 1. CONFIGURACIÓN GLOBAL
+// 1. CONFIGURACIÓN INICIAL Y CONSTANTES
 // =============================================================================
-const APP_VERSION = "v1.1.2";
+const VERSION_APLICACION = "v1.2.0";
 
+// Desplegables por defecto cuando la app se usa por primera vez
+const DESPLEGABLES_POR_DEFECTO = [
+    { id: 'lista_1', nombre: 'Lista 1' },
+    { id: 'lista_2', nombre: 'Lista 2' },
+    { id: 'lista_3', nombre: 'Lista 3' },
+    { id: 'lista_4', nombre: 'Lista 4' }
+];
 
-// Función que carga documentos en el iframe
-function loadDocument(url) {
-    // Si la URL ya viene con algo raro, la cargamos tal cual para no fallar
-    let finalUrl = url;
-    
-    // Solo intentamos el modo preview si es un link de Google Docs estándar
+// Obtiene los desplegables guardados o inicializa los por defecto
+function obtenerDesplegables() {
+    const datosGuardados = localStorage.getItem('gestor_lista_desplegables');
+    if (!datosGuardados) {
+        localStorage.setItem('gestor_lista_desplegables', JSON.stringify(DESPLEGABLES_POR_DEFECTO));
+        return DESPLEGABLES_POR_DEFECTO;
+    }
+    return JSON.parse(datosGuardados);
+}
+
+// Guarda el listado de desplegables en LocalStorage
+function guardarDesplegables(lista) {
+    localStorage.setItem('gestor_lista_desplegables', JSON.stringify(lista));
+}
+
+// Carga el documento seleccionado dentro del iframe central
+function cargarDocumentoEnVisor(url) {
+    let urlFinal = url;
     if (url.includes('docs.google.com') && url.includes('/edit')) {
-        // Esta es la forma más segura de cambiar a vista previa sin romper el ID del doc
-        finalUrl = url.split('/edit')[0] + '/preview';
+        urlFinal = url.split('/edit')[0] + '/preview';
     }
-    
-    document.getElementById('documentViewer').src = finalUrl;
+    const visor = document.getElementById('visorDocumentos');
+    if (visor) visor.src = urlFinal;
 }
 
 // =============================================================================
-// 2. GESTIÓN DE ENLACES (ESTRUCTURA ORIGINAL)
+// 2. INICIALIZACIÓN Y RENDERIZADO DE NAVEGACIÓN
 // =============================================================================
 
-// Función para eliminar un enlace
-function deleteLink(button) {
-    const confirmDelete = confirm("¿Estás seguro de que deseas eliminar este enlace?");
-    if (confirmDelete) {
-        const linkItem = button.parentElement; // El <li>
-        const linkAnchor = linkItem.querySelector('a');
-        const linkName = linkAnchor.innerText;
-        const linkURL = linkAnchor.getAttribute('onclick').match(/'([^']+)'/)[1]; 
-        
-        const dropdownMenu = linkItem.closest('.dropdown-menu');
-        const dropdownButton = dropdownMenu.closest('.nav-item').querySelector('.dropdown-toggle');
-        const dropdownId = dropdownButton.id;
+document.addEventListener('DOMContentLoaded', () => {
+    dibujarBarraNavegacion();
+    comprobarMostrarBienvenida();
 
-        // Eliminar del DOM
-        linkItem.remove();
-
-        // Eliminar del localStorage
-        let storedLinks = JSON.parse(localStorage.getItem(dropdownId + '_links')) || [];
-        storedLinks = storedLinks.filter(link => !(link.name === linkName && link.url === linkURL));
-        
-        localStorage.setItem(dropdownId + '_links', JSON.stringify(storedLinks));
-
-        alert("¡Enlace eliminado correctamente!");
+    const etiquetaVersion = document.getElementById('versionAplicacion');
+    if (etiquetaVersion) {
+        etiquetaVersion.innerText = ` | Versión: ${VERSION_APLICACION}`;
     }
+});
+
+// Genera los desplegables dinámicos en la barra superior
+function dibujarBarraNavegacion() {
+    const contenedor = document.getElementById('contenedorDesplegables');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = "";
+    const desplegables = obtenerDesplegables();
+
+    desplegables.forEach(item => {
+        const enlacesGuardados = JSON.parse(localStorage.getItem(item.id + '_enlaces')) || [];
+        
+        const elementoLi = document.createElement('li');
+        elementoLi.className = "nav-item dropdown me-2";
+        
+        let htmlEnlaces = "";
+        enlacesGuardados.forEach(enlace => {
+            htmlEnlaces += `
+                <li class="d-flex align-items-center border-bottom">
+                    <a class="dropdown-item text-wrap" href="#" onclick="cargarDocumentoEnVisor('${enlace.url}'); return false;" style="flex-grow: 1; padding:8px 12px;">${enlace.nombre}</a>
+                    <button class="btn btn-outline-danger btn-sm me-2" onclick="eliminarEnlace(this, '${item.id}')" style="padding: 1px 6px;" title="Eliminar enlace">
+                       <i class="fi fi-rr-trash"></i>
+                    </button>
+                </li>
+            `;
+        });
+
+        elementoLi.innerHTML = `
+            <a class="nav-link dropdown-toggle" href="#" id="${item.id}" data-bs-toggle="dropdown">${item.nombre}</a>
+            <ul class="dropdown-menu shadow">${htmlEnlaces.length > 0 ? htmlEnlaces : '<li><span class="dropdown-item text-muted disabled">Sin enlaces</span></li>'}</ul>
+        `;
+        contenedor.appendChild(elementoLi);
+    });
 }
 
-// Función para mostrar el modal de AGREGAR enlace
-function showAddLinkModal() {
-    const ids = ['dropdownMenuButton1', 'dropdownMenuButton2', 'dropdownMenuButton3', 'dropdownMenuButton4'];
-    let selectOptions = '';
-    ids.forEach(id => {
-        const button = document.getElementById(id);
-        const name = button ? button.innerText : id; 
-        selectOptions += `<option value="${id}">${name}</option>`;
+// Controla la aparición del cartel blanco de bienvenida en el centro
+function comprobarMostrarBienvenida() {
+    const desplegables = obtenerDesplegables();
+    let hayEnlacesCargados = false;
+
+    desplegables.forEach(item => {
+        const enlaces = JSON.parse(localStorage.getItem(item.id + '_enlaces')) || [];
+        if (enlaces.length > 0) hayEnlacesCargados = true;
     });
 
-    const modalContent = `
-        <div id="addLinkModal" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 5px; width: 320px; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-            <label><b>Categoría:</b></label>
-            <select id="dropdownSelection">${selectOptions}</select>
+    const cartel = document.getElementById('cartelBienvenida');
+    if (cartel) {
+        cartel.style.display = hayEnlacesCargados ? 'none' : 'block';
+    }
+}
+
+function ocultarCartelBienvenida() {
+    const cartel = document.getElementById('cartelBienvenida');
+    if (cartel) cartel.style.display = 'none';
+}
+
+// =============================================================================
+// 3. GESTIÓN DE ENLACES (AGREGAR / ELIMINAR)
+// =============================================================================
+
+function eliminarEnlace(boton, idDesplegable) {
+    if (confirm("¿Estás seguro/a de que querés eliminar este enlace?")) {
+        const itemLi = boton.parentElement; 
+        const etiquetaA = itemLi.querySelector('a');
+        const nombreEnlace = etiquetaA.innerText;
+        const urlEnlace = etiquetaA.getAttribute('onclick').match(/'([^']+)'/)[1]; 
+
+        let enlacesGuardados = JSON.parse(localStorage.getItem(idDesplegable + '_enlaces')) || [];
+        enlacesGuardados = enlacesGuardados.filter(item => !(item.nombre === nombreEnlace && item.url === urlEnlace));
+        
+        localStorage.setItem(idDesplegable + '_enlaces', JSON.stringify(enlacesGuardados));
+        dibujarBarraNavegacion();
+        comprobarMostrarBienvenida();
+    }
+}
+
+function mostrarModalAgregarEnlace() {
+    const desplegables = obtenerDesplegables();
+    let opcionesSelect = '';
+    desplegables.forEach(item => {
+        opcionesSelect += `<option value="${item.id}">${item.nombre}</option>`;
+    });
+
+    const contenidoModal = `
+        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 360px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;">
+            <h6 class="fw-bold mb-3 border-bottom pb-2">Agregar Nuevo Enlace</h6>
             
-            <label><b>Nombre del enlace:</b></label>
-            <input type="text" id="linkName" placeholder="Ej: Manual de Usuario">
+            <div class="mb-2">
+                <label class="form-label small fw-bold mb-1">Desplegable destino:</label>
+                <select id="selectDesplegableDestino" class="form-select form-select-sm">${opcionesSelect}</select>
+            </div>
             
-            <label><b>Etiquetas/Temas (IA):</b></label>
-            <input type="text" id="linkTags" placeholder="Ej: Meta, chatbot, técnico">
+            <div class="mb-2">
+                <label class="form-label small fw-bold mb-1">Nombre del documento:</label>
+                <input type="text" id="inputNombreEnlace" class="form-control form-control-sm" placeholder="Ej: Manual de Usuario">
+            </div>
             
-            <label><b>URL del enlace:</b></label>
-            <input type="text" id="linkURL" placeholder="https://...">
+            <div class="mb-2">
+                <label class="form-label small fw-bold mb-1">Etiquetas (IA):</label>
+                <input type="text" id="inputEtiquetasIA" class="form-control form-control-sm" placeholder="Ej: Meta, chatbot, técnico">
+            </div>
             
-            <button class="btn btn-success mt-2" onclick="addLink()">Guardar Enlace</button>
-            <button class="btn btn-secondary mt-1" onclick="closeModal()">Cancelar</button>
+            <div class="mb-3">
+                <label class="form-label small fw-bold mb-1">URL del documento:</label>
+                <input type="text" id="inputUrlEnlace" class="form-control form-control-sm" placeholder="https://...">
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-secondary btn-sm" onclick="cerrarModalTemporal()">Cancelar</button>
+                <button class="btn btn-success btn-sm" onclick="guardarNuevoEnlace()">Guardar</button>
+            </div>
         </div>
     `;
 
+    cerrarModalTemporal();
     const modal = document.createElement('div');
-    modal.id = "addLinkModalContainer";
-    modal.innerHTML = modalContent;
+    modal.id = "contenedorModalTemporal";
+    modal.innerHTML = contenidoModal;
     document.body.appendChild(modal);
 }
 
-function closeModal() {
-    const modal = document.getElementById('addLinkModalContainer');
+function cerrarModalTemporal() {
+    const modal = document.getElementById('contenedorModalTemporal');
     if (modal) modal.remove();
 }
 
-function addLink() {
-    const dropdownSelection = document.getElementById('dropdownSelection').value;
-    const linkName = document.getElementById('linkName').value;
-    const linkURL = document.getElementById('linkURL').value;
-    const linkTags = document.getElementById('linkTags').value; // Capturamos etiquetas
+function guardarNuevoEnlace() {
+    const idDesplegable = document.getElementById('selectDesplegableDestino').value;
+    const nombre = document.getElementById('inputNombreEnlace').value.trim();
+    const url = document.getElementById('inputUrlEnlace').value.trim();
+    const etiquetas = document.getElementById('inputEtiquetasIA').value.trim();
 
-    if (linkName && linkURL) {
-        const dropdownButton = document.getElementById(dropdownSelection);
-        const menu = dropdownButton.closest('.nav-item').querySelector('.dropdown-menu');
+    if (nombre && url) {
+        const enlacesGuardados = JSON.parse(localStorage.getItem(idDesplegable + '_enlaces')) || [];
+        enlacesGuardados.push({ nombre, url, etiquetas });
+        localStorage.setItem(idDesplegable + '_enlaces', JSON.stringify(enlacesGuardados));
+        
+        cerrarModalTemporal();
+        dibujarBarraNavegacion();
+        comprobarMostrarBienvenida();
 
-        if (menu) {
-            // Guardar en localStorage incluyendo el nuevo campo 'tags'
-            const storedLinks = JSON.parse(localStorage.getItem(dropdownSelection + '_links')) || [];
-            storedLinks.push({ 
-                name: linkName, 
-                url: linkURL, 
-                tags: linkTags // Guardamos los tags aquí
-            });
-            localStorage.setItem(dropdownSelection + '_links', JSON.stringify(storedLinks));
+        // Cerrar panel lateral si está abierto
+        const panelElemento = document.getElementById('panelAdministracion');
+        const instanciaPanel = bootstrap.Offcanvas.getInstance(panelElemento);
+        if (instanciaPanel) instanciaPanel.hide();
 
-            // Recargar la interfaz para que aparezca el botón de eliminar y el link
-            location.reload(); 
-        }
     } else {
-        alert("Por favor, completa Nombre y URL.");
+        alert("Por favor, completá al menos el Nombre y la URL.");
     }
 }
 
 // =============================================================================
-// 3. EDICIÓN DE CATEGORÍAS
+// 4. CREACIÓN Y EDICIÓN DE DESPLEGABLES (NUEVO MODAL PROPIO)
 // =============================================================================
 
-function showEditDropdownModal() {
-    const ids = ['dropdownMenuButton1', 'dropdownMenuButton2', 'dropdownMenuButton3', 'dropdownMenuButton4'];
-    let selectOptions = '';
-    ids.forEach(id => {
-        const name = document.getElementById(id)?.innerText || id;
-        selectOptions += `<option value="${id}">${name}</option>`;
-    });
-
-    const modalContent = `
-        <div id="editDropdownModal" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 8px; width: 400px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-            <h5>Configuración de Categoría</h5>
+// Reemplaza al prompt() nativo feo por un Modal Elegante
+function mostrarModalCrearDesplegable() {
+    const contenidoModal = `
+        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 360px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;">
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h6 class="fw-bold text-dark m-0">Crear Nuevo Desplegable</h6>
+                <button type="button" class="btn-close" onclick="cerrarModalTemporal()" aria-label="Cerrar"></button>
+            </div>
             
-            <label>Selecciona el desplegable:</label>
-            <select id="dropdownSelectionEdit" onchange="renderLinksEditor(this.value)">
-                <option value="">-- Selecciona --</option>
-                ${selectOptions}
-            </select>
-
-            <label>Nuevo nombre de la categoría:</label>
-            <input type="text" id="dropdownNewName" placeholder="Ej: Recursos Humanos">
-
-            <div id="linksEditorContainer" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                </div>
-
-            <button class="btn btn-primary mt-2" onclick="updateFullCategory()">Guardar Cambios</button>
-            <button class="btn btn-secondary mt-1" onclick="closeEditDropdownModal()">Cancelar</button>
+            <div class="mb-3 text-start mt-3">
+                <label class="form-label small fw-bold mb-1 text-dark">Nombre del desplegable:</label>
+                <input type="text" id="inputNombreNuevoDesplegable" class="form-control form-control-sm" placeholder="Ej: Formularios">
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalTemporal()" style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center;">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarNuevoDesplegable()" style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center;">Crear</button>
+            </div>
         </div>
     `;
 
+    cerrarModalTemporal();
     const modal = document.createElement('div');
-    modal.id = "editDropdownModalContainer";
-    modal.innerHTML = modalContent;
+    modal.id = "contenedorModalTemporal";
+    modal.innerHTML = contenidoModal;
     document.body.appendChild(modal);
 }
 
-function renderLinksEditor(id) {
-    const container = document.getElementById('linksEditorContainer');
-    if (!id) {
-        container.innerHTML = "";
+function guardarNuevoDesplegable() {
+    const input = document.getElementById('inputNombreNuevoDesplegable');
+    const nombreNuevo = input ? input.value.trim() : '';
+
+    if (!nombreNuevo) {
+        alert("Por favor, ingresá un nombre para el desplegable.");
         return;
     }
 
-    const enlaces = JSON.parse(localStorage.getItem(id + '_links')) || [];
-    let html = "<h6>Enlaces y Etiquetas IA:</h6>";
+    const desplegables = obtenerDesplegables();
+    const nuevoId = `lista_${Date.now()}`;
+    desplegables.push({ id: nuevoId, nombre: nombreNuevo });
     
+    guardarDesplegables(desplegables);
+    dibujarBarraNavegacion();
+    cerrarModalTemporal();
+
+    // Cerrar el panel lateral
+    const panelElemento = document.getElementById('panelAdministracion');
+    const instanciaPanel = bootstrap.Offcanvas.getInstance(panelElemento);
+    if (instanciaPanel) instanciaPanel.hide();
+}
+
+// Modal Editar con BOTONES FORZADOS A TENER MISMA ALTURA Y ALINEACIÓN
+function mostrarModalAgregarEnlace() {
+    const desplegables = obtenerDesplegables();
+    let opcionesSelect = '';
+    desplegables.forEach(item => {
+        opcionesSelect += `<option value="${item.id}">${item.nombre}</option>`;
+    });
+
+    const contenidoModal = `
+        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 360px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;">
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h6 class="fw-bold text-dark m-0">Agregar Nuevo Enlace</h6>
+                <button type="button" class="btn-close" onclick="cerrarModalTemporal()" aria-label="Cerrar"></button>
+            </div>
+            
+            <div class="mb-2 text-start">
+                <label class="form-label small fw-bold mb-1 text-dark">Desplegable destino:</label>
+                <select id="selectDesplegableDestino" class="form-select form-select-sm">${opcionesSelect}</select>
+            </div>
+            
+            <div class="mb-2 text-start">
+                <label class="form-label small fw-bold mb-1 text-dark">Nombre del documento:</label>
+                <input type="text" id="inputNombreEnlace" class="form-control form-control-sm" placeholder="Ej: Manual de Usuario">
+            </div>
+            
+            <div class="mb-2 text-start">
+                <label class="form-label small fw-bold mb-1 text-dark">Etiquetas (IA):</label>
+                <input type="text" id="inputEtiquetasIA" class="form-control form-control-sm" placeholder="Ej: Meta, chatbot, técnico">
+            </div>
+            
+            <div class="mb-3 text-start">
+                <label class="form-label small fw-bold mb-1 text-dark">URL del documento:</label>
+                <input type="text" id="inputUrlEnlace" class="form-control form-control-sm" placeholder="https://...">
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalTemporal()" style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center;">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="guardarNuevoEnlace()" style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center;">Guardar</button>
+            </div>
+        </div>
+    `;
+
+    cerrarModalTemporal();
+    const modal = document.createElement('div');
+    modal.id = "contenedorModalTemporal";
+    modal.innerHTML = contenidoModal;
+    document.body.appendChild(modal);
+}
+
+function mostrarModalEditarDesplegable() {
+    const desplegables = obtenerDesplegables();
+    let opcionesSelect = '';
+    desplegables.forEach(item => {
+        opcionesSelect += `<option value="${item.id}">${item.nombre}</option>`;
+    });
+
+    const contenidoModal = `
+        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 380px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;">
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h6 class="fw-bold text-dark m-0">Editar Desplegable</h6>
+                <button type="button" class="btn-close" onclick="cerrarModalTemporal()" aria-label="Cerrar"></button>
+            </div>
+            
+            <div class="mb-3 text-start mt-3">
+                <label class="form-label small fw-bold mb-1 text-dark">Seleccioná el desplegable:</label>
+                <select id="selectDesplegableEditar" class="form-select form-select-sm" onchange="cargarLienzoEdicionDesplegable(this.value)">
+                    <option value="">-- Seleccionar --</option>
+                    ${opcionesSelect}
+                </select>
+            </div>
+
+            <div class="mb-3 text-start">
+                <label class="form-label small fw-bold mb-1 text-dark">Nuevo nombre:</label>
+                <input type="text" id="inputNuevoNombreDesplegable" class="form-control form-control-sm" placeholder="Ej: Recursos Humanos">
+            </div>
+
+            <div id="contenedorListaEnlacesEditar" class="mb-3" style="max-height: 150px; overflow-y: auto;"></div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-3" style="gap: 10px;">
+                <button type="button" 
+                        class="btn btn-danger" 
+                        onclick="eliminarDesplegableSeleccionado()" 
+                        style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center; line-height: 1;">
+                    Eliminar
+                </button>
+                
+                <div class="d-flex align-items-center" style="gap: 8px;">
+                    <button type="button" 
+                            class="btn btn-secondary" 
+                            onclick="cerrarModalTemporal()" 
+                            style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center; line-height: 1;">
+                        Cancelar
+                    </button>
+                    <button type="button" 
+                            class="btn btn-primary" 
+                            onclick="guardarCambiosDesplegable()" 
+                            style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center; line-height: 1;">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    cerrarModalTemporal();
+    const modal = document.createElement('div');
+    modal.id = "contenedorModalTemporal";
+    modal.innerHTML = contenidoModal;
+    document.body.appendChild(modal);
+}
+
+function cargarLienzoEdicionDesplegable(id) {
+    const contenedor = document.getElementById('contenedorListaEnlacesEditar');
+    if (!id) {
+        contenedor.innerHTML = "";
+        return;
+    }
+
+    const desplegables = obtenerDesplegables();
+    const objetivo = desplegables.find(d => d.id === id);
+    const enlaces = JSON.parse(localStorage.getItem(id + '_enlaces')) || [];
+    
+    let html = "<small class='fw-bold text-muted d-block mb-1'>Enlaces cargados:</small>";
     if (enlaces.length === 0) {
-        html += "<p><small>No hay enlaces en esta categoría.</small></p>";
+        html += "<p><small class='text-muted'>Sin enlaces en este desplegable.</small></p>";
     } else {
-        enlaces.forEach((link, index) => {
+        enlaces.forEach((item, indice) => {
             html += `
-                <div class="mb-2">
-                    <input type="text" class="form-control form-control-sm mb-1" value="${link.name}" id="edit-name-${index}" placeholder="Nombre del enlace">
-                    <input type="text" class="form-control form-control-sm" value="${link.tags || ''}" id="edit-tags-${index}" placeholder="Etiquetas (IA)">
+                <div class="mb-2 p-2 border rounded bg-light">
+                    <input type="text" class="form-control form-control-sm mb-1" value="${item.nombre}" id="edit-nombre-${indice}" placeholder="Nombre del enlace">
+                    <input type="text" class="form-control form-control-sm" value="${item.etiquetas || ''}" id="edit-etiquetas-${indice}" placeholder="Etiquetas (IA)">
                 </div>
             `;
         });
     }
-    container.innerHTML = html;
-    
-    // De paso, ponemos el nombre actual de la categoría en el input de arriba
-    document.getElementById('dropdownNewName').value = document.getElementById(id).innerText;
-}
-function closeEditDropdownModal() {
-    const modal = document.getElementById('editDropdownModalContainer');
-    if (modal) modal.remove();
+
+    contenedor.innerHTML = html;
+    if (objetivo) document.getElementById('inputNuevoNombreDesplegable').value = objetivo.nombre;
 }
 
-function updateFullCategory() {
-    const id = document.getElementById('dropdownSelectionEdit').value;
-    const newCatName = document.getElementById('dropdownNewName').value;
+function guardarCambiosDesplegable() {
+    const id = document.getElementById('selectDesplegableEditar').value;
+    const nuevoNombre = document.getElementById('inputNuevoNombreDesplegable').value.trim();
     
-    if (!id) return alert("Selecciona una categoría");
+    if (!id) return alert("Seleccioná un desplegable primero.");
 
-    // 1. Guardar nuevo nombre de categoría
-    if (newCatName) {
-        localStorage.setItem(id, newCatName);
-        document.getElementById(id).innerText = newCatName;
+    let desplegables = obtenerDesplegables();
+    const indice = desplegables.findIndex(d => d.id === id);
+
+    if (indice !== -1 && nuevoNombre) {
+        desplegables[indice].nombre = nuevoNombre;
+        guardarDesplegables(desplegables);
     }
 
-    // 2. Guardar cambios en enlaces y etiquetas
-    let enlaces = JSON.parse(localStorage.getItem(id + '_links')) || [];
-    enlaces = enlaces.map((link, index) => {
-        return {
-            ...link,
-            name: document.getElementById(`edit-name-${index}`).value,
-            tags: document.getElementById(`edit-tags-${index}`).value
-        };
-    });
+    let enlaces = JSON.parse(localStorage.getItem(id + '_enlaces')) || [];
+    enlaces = enlaces.map((item, index) => ({
+        ...item,
+        nombre: document.getElementById(`edit-nombre-${index}`).value,
+        etiquetas: document.getElementById(`edit-etiquetas-${index}`).value
+    }));
     
-    localStorage.setItem(id + '_links', JSON.stringify(enlaces));
+    localStorage.setItem(id + '_enlaces', JSON.stringify(enlaces));
     
-    alert("¡Cambios guardados con éxito!");
-    location.reload(); // Recargamos para que los cambios se vean en los menús
+    cerrarModalTemporal();
+    dibujarBarraNavegacion();
 }
 
-function updateDropdownName() {
-    const dropdownSelection = document.getElementById('dropdownSelectionEdit').value;
-    const newName = document.getElementById('dropdownNewName').value;
+function eliminarDesplegableSeleccionado() {
+    const id = document.getElementById('selectDesplegableEditar').value;
+    if (!id) return alert("Seleccioná un desplegable para eliminar.");
 
-    if (newName) {
-        localStorage.setItem(dropdownSelection, newName);
-        document.getElementById(dropdownSelection).innerText = newName;
-        alert(`El nombre se ha cambiado a "${newName}"`);
-        closeEditDropdownModal();
+    if (confirm("¿Estás seguro/a de borrar este desplegable y todos sus enlaces?")) {
+        let desplegables = obtenerDesplegables();
+        desplegables = desplegables.filter(d => d.id !== id);
+        
+        guardarDesplegables(desplegables);
+        localStorage.removeItem(id + '_enlaces');
+        
+        cerrarModalTemporal();
+        dibujarBarraNavegacion();
+        comprobarMostrarBienvenida();
     }
 }
 
 // =============================================================================
-// 4. PERSISTENCIA (DOM CONTENT LOADED)
+// 5. RESPALDO DE DATOS (EXPORTAR E IMPORTAR JSON)
 // =============================================================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    const dropdownIds = ["dropdownMenuButton1", "dropdownMenuButton2", "dropdownMenuButton3", "dropdownMenuButton4"];
-    
-    dropdownIds.forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) {
-            const savedName = localStorage.getItem(id);
-            if (savedName) btn.innerText = savedName;
-
-            const menu = btn.closest('.nav-item').querySelector('.dropdown-menu');
-            const storedLinks = JSON.parse(localStorage.getItem(id + '_links')) || [];
-            
-            menu.innerHTML = ""; 
-            storedLinks.forEach(link => {
-                const li = document.createElement('li');
-                // Agregamos d-flex para que el texto y el botón convivan bien
-                li.className = "d-flex align-items-center border-bottom";
-                li.innerHTML = `
-                    <a class="dropdown-item text-wrap" href="#" onclick="loadDocument('${link.url}'); return false;" style="flex-grow: 1; padding:10px;">${link.name}</a>
-                    <button class="btn btn-outline-danger btn-sm me-2" 
-                       onclick="deleteLink(this)" 
-                       style="padding: 2px 5px;">
-                       <i class="fi fi-rr-trash"></i>
-                    </button>
-                `;
-                menu.appendChild(li);
-            });
-        }
-    });
-    // --- NUEVA LÓGICA PARA LA VERSIÓN ---
-    const versionLabel = document.getElementById('appVersion');
-    if (versionLabel) {
-        // Usamos un separador para que no se pegue al texto anterior
-        versionLabel.innerText = ` | Versión: ${APP_VERSION}`;
-            }
-});
-
-// =============================================================================
-// 5. EXPORTAR E IMPORTAR
-// =============================================================================
-
-window.exportData = function() {
-    const backup = {};
+function exportarCopiaSeguridad() {
+    const copia = {};
     for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        backup[key] = localStorage.getItem(key);
+        const clave = localStorage.key(i);
+        copia[clave] = localStorage.getItem(clave);
     }
-    if (Object.keys(backup).length === 0) return alert("No hay datos");
+    if (Object.keys(copia).length === 0) return alert("No hay datos cargados para exportar.");
 
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "enlaces_gestor.json";
-    a.click();
-};
+    const archivoBlob = new Blob([JSON.stringify(copia, null, 2)], { type: "application/json" });
+    const enlaceDescarga = document.createElement("a");
+    enlaceDescarga.href = URL.createObjectURL(archivoBlob);
+    enlaceDescarga.download = `gestor_documentos_backup_${VERSION_APLICACION}.json`;
+    enlaceDescarga.click();
+}
 
-window.importData = function(file) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
+function importarCopiaSeguridad(archivo) {
+    if (!archivo) return;
+    const lector = new FileReader();
+    lector.onload = function(e) {
         try {
-            const data = JSON.parse(e.target.result);
+            const datosImportados = JSON.parse(e.target.result);
             localStorage.clear();
-            Object.keys(data).forEach(key => localStorage.setItem(key, data[key]));
-            const modalElement = document.getElementById('importConfirmModal');
-            if (modalElement) {
-                const modal = new bootstrap.Modal(modalElement);
-                modal.show();
-            }
-        } catch (err) { alert("Error en el archivo JSON"); }
+            Object.keys(datosImportados).forEach(clave => {
+                localStorage.setItem(clave, datosImportados[clave]);
+            });
+            
+            dibujarBarraNavegacion();
+            comprobarMostrarBienvenida();
+            alert("¡Datos importados con éxito!");
+        } catch (err) { 
+            alert("El archivo subido no es un JSON válido."); 
+        }
     };
-    reader.readAsText(file);
+    lector.readAsText(archivo);
 }
 
 // =============================================================================
-// 6. SECCIÓN ASISTENTE IA (MODAL Y CONSULTA)
+// 6. ASISTENTE VIRTUAL IA (GEMINI API)
 // =============================================================================
 
-// Función para abrir el modal del HTML (ID: iaModal)
-window.abrirModalIA = function() {
-    const modalElement = document.getElementById('iaModal');
-    const instance = bootstrap.Modal.getOrCreateInstance(modalElement);
+function abrirModalIA() {
+    const elementoModal = document.getElementById('iaModal');
+    if (!elementoModal) return;
+    const instancia = bootstrap.Modal.getOrCreateInstance(elementoModal);
     
-    // Si el modal está visible, lo cerramos. Si no, lo abrimos.
-    if (modalElement.classList.contains('show')) {
-        instance.hide();
+    if (elementoModal.classList.contains('show')) {
+        instancia.hide();
     } else {
-        instance.show();
+        instancia.show();
     }
-};
+}
 
-// Función para el contexto dinámico
-function prepararContextoIA() {
-    let textoContexto = "Categorías y enlaces actuales:\n";
+function armarContextoParaIA() {
+    let contexto = "Categorías y enlaces disponibles actualmente:\n";
     let hayDatos = false;
 
-    for (let i = 1; i <= 4; i++) {
-        const btnId = `dropdownMenuButton${i}`;
-        const nombreCategoria = localStorage.getItem(btnId) || `Categoría ${i}`;
-        const enlaces = JSON.parse(localStorage.getItem(btnId + '_links')) || [];
-        
+    const desplegables = obtenerDesplegables();
+    desplegables.forEach(item => {
+        const enlaces = JSON.parse(localStorage.getItem(item.id + '_enlaces')) || [];
         if (enlaces.length > 0) {
             hayDatos = true;
-            textoContexto += `\n[${nombreCategoria}]:\n`;
-            
-            // EL CAMBIO ESTÁ AQUÍ:
-            enlaces.forEach(link => {
-                // Primero definimos las etiquetas si existen
-                const etiquetas = link.tags ? ` [Etiquetas: ${link.tags}]` : "";
-                // Luego construimos la línea completa
-                textoContexto += `- ${link.name}${etiquetas} (URL: ${link.url})\n`;
+            contexto += `\n[Categoría: ${item.nombre}]:\n`;
+            enlaces.forEach(enlace => {
+                const tags = enlace.etiquetas ? ` (Etiquetas: ${enlace.etiquetas})` : "";
+                contexto += `- ${enlace.nombre}${tags} | URL: ${enlace.url}\n`;
             });
         }
-    }
-    return hayDatos ? textoContexto : "No hay documentos cargados.";
+    });
+
+    return hayDatos ? contexto : "No hay documentos cargados en el sistema actualmente.";
 }
 
-// Función principal para enviar consulta a Gemini 2.5 Flash
-window.sendIAQuery = async function() {
-    const input = document.getElementById('iaInput');
-    const chat = document.getElementById('iaChatWindow');
-    const userText = input.value.trim();
+function verificarEntradaTextoIA() {
+    const input = document.getElementById('entradaTextoIA');
+    const boton = document.getElementById('botonEnviarIA');
+    if (!input || !boton) return;
+
+    if (input.value.trim().length > 0) {
+        boton.style.backgroundColor = "#28a745";
+        boton.style.color = "#ffffff";
+    } else {
+        boton.style.backgroundColor = "#f0f2f5";
+        boton.style.color = "#888";
+    }
+}
+
+async function enviarConsultaIA() {
+    const input = document.getElementById('entradaTextoIA');
+    const ventanaChat = document.getElementById('ventanaChatIA');
+    const textoUsuario = input.value.trim();
     
-    if (!userText) return;
+    if (!textoUsuario) return;
 
-    // Mostrar lo que escribe el usuario
-    chat.innerHTML += `<div class="text-end text-primary mb-2"><b>Tú:</b> ${userText}</div>`;
+    ventanaChat.innerHTML += `<div class="text-end text-primary mb-2"><b>Tú:</b> ${textoUsuario}</div>`;
     input.value = '';
+    verificarEntradaTextoIA();
 
-    const iaMsg = document.createElement('div');
-    iaMsg.className = 'text-start text-success mb-2';
-    iaMsg.innerHTML = "<b>IA:</b> Pensando...";
-    chat.appendChild(iaMsg);
-    chat.scrollTop = chat.scrollHeight;
+    const mensajeIA = document.createElement('div');
+    mensajeIA.className = 'text-start text-success mb-2';
+    mensajeIA.innerHTML = "<b>IA:</b> Pensando...";
+    ventanaChat.appendChild(mensajeIA);
+    ventanaChat.scrollTop = ventanaChat.scrollHeight;
 
     try {
-        const contexto = prepararContextoIA();
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+        if (typeof API_KEY === 'undefined') {
+            throw new Error("Clave API no encontrada. Asegurate de definir API_KEY en config.js.");
+        }
 
-        const response = await fetch(url, {
+        const contextoActual = armarContextoParaIA();
+        const urlEndpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+
+        const respuesta = await fetch(urlEndpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -381,106 +564,38 @@ window.sendIAQuery = async function() {
                         Tu tono debe ser profesional y servicial. 
                         Fecha y hora actual: ${new Date().toLocaleString()}
 
-                        REGLAS DE FORMATO (PARA EVITAR ESTRÉS VISUAL):
-                        1. Usa **negritas** para resaltar nombres de documentos o conceptos clave.
-                        2. NUNCA escribas párrafos largos. Divide la información en frases cortas.
-                        3. Si enumeras elementos, usa listas con viñetas (guiones).
-                        4. Deja un doble salto de línea entre párrafos.
-                        5. Enlaces en formato exacto: <a href="#" onclick="loadDocument('URL_DEL_DOC'); return false;">NOMBRE_DEL_DOC</a>
-                        6. Sé directo y humano. 
-                        7. NO uses frases genéricas como "Estimado usuario", "De acuerdo a su consulta" o "Le informo que".
+                        REGLAS DE FORMATO:
+                        1. Usa **negritas** para resaltar nombres de documentos.
+                        2. Divide la información en frases cortas.
+                        3. Para enlaces usa este formato: <a href="#" onclick="cargarDocumentoEnVisor('URL_DEL_DOC'); return false;">NOMBRE_DEL_DOC</a>
 
-                        REGLAS DE ORO:
-                        1. Prioriza el 'Contexto actual' para temas de documentos. Para preguntas generales de oficina o fechas, usa la información de 'PROXIMOS FERIADOS' y la 'Fecha actual' proporcionada."
-                        2. SOBRE ESTA APP: "Gestor de Documentos v1.1.2", visor central, exportar/importar .json.
-                        3. No asumas nombres de usuario a menos que te lo digan.
-                        4. Si ves que un documento tiene "tags" o "etiquetas", úsalas para saber si ese doc es relevante.
-                        5. SOBRE ESTA APP (Guía de Ayuda): 
-                        Esta aplicación es el "Gestor de Documentos v1.1.2", creada por el Área de Desarrollo del Ministerio, para solucionar el desorden de archivos en Drive y centralizar el acceso rápido a la documentación de la oficina.
-                        - Propósito: Evitar que los documentos se pierdan. Permite tener a mano los links directos de Drive o Web organizados por categorías.
-                        - Visor: Al hacer click en un enlace, el documento se abre en el panel central sin salir de la app.
-                        - Gestión: El usuario puede "Agregar enlace" para guardar sus propios documentos de Drive o "Editar" categorías existentes para mejorar su organización como asi también etiquetas, todo desde los botones de la interfaz.
-                        - Sincronización: Si el usuario cambia de PC, debe usar "Exportar" para bajar un archivo .json con sus links y luego "Importar" en la nueva máquina para recuperar sus enlaces.
-                        6. Si el usuario solicita funciones técnicas o cambios estructurales, indícale que debe elevar el requerimiento al Área de Desarrollo del Ministerio.
-                        7. PROCEDIMIENTOS: Si un link de Drive no abre, es probable que no sea público. Indicar al usuario que debe ponerlo como 'Lector' para todos.
-   
+                        Contexto actual del sistema:
+                        ${contextoActual}
 
-                        Contexto actual: ${contexto}
-                        Pregunta del usuario: ${userText}` 
+                        Pregunta del usuario: ${textoUsuario}` 
                     }]
                 }]
             })
         });
 
-        const data = await response.json();
+        const datos = await respuesta.json();
+        if (datos.error) throw new Error(datos.error.message);
 
-        if (data.error) throw new Error(data.error.message);
+        const respuestaTexto = datos.candidates[0].content.parts[0].text;
 
-        const respuestaTexto = data.candidates[0].content.parts[0].text;
+        let textoProcesado = respuestaTexto
+            .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+            .replace(/^\*\s+/gm, "• ")
+            .replace(/\n/g, "<br>");
 
-        // --- PROCESAMIENTO VISUAL DEL TEXTO ---
-        
-        // 1. Convertir **texto** en <b>texto</b> (Negritas)
-        let textoProcesado = respuestaTexto.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-
-        // 2. Convertir asteriscos de lista en viñetas elegantes (•)
-        textoProcesado = textoProcesado.replace(/^\*\s+/gm, "• ");
-        
-        // 3. Limpiar espacios innecesarios
-        textoProcesado = textoProcesado.trim();
-
-        // 4. Inyectar al modal con la clase de respuesta (Asegúrate de tener .ia-response en tu CSS)
-        iaMsg.className = 'text-start mb-3 p-3 rounded-3 shadow-sm'; 
-        iaMsg.style.backgroundColor = "#f8f9fa";
-        iaMsg.style.borderLeft = "4px solid #28a745";
-        iaMsg.style.whiteSpace = "pre-wrap"; // Esto es vital para los saltos de línea
-        
-        iaMsg.innerHTML = `<small class="fw-bold text-success d-block mb-1">Asistente</small>${textoProcesado}`;
+        mensajeIA.className = 'text-start mb-3 p-3 rounded-3 shadow-sm'; 
+        mensajeIA.style.backgroundColor = "#f8f9fa";
+        mensajeIA.style.borderLeft = "4px solid #28a745";
+        mensajeIA.innerHTML = `<small class="fw-bold text-success d-block mb-1">Asistente</small>${textoProcesado}`;
 
     } catch (error) {
-        iaMsg.innerHTML = `<b class="text-danger">IA: Error. Detalle: ${error.message}</b>`;
-        console.error("Error completo:", error);
-    }};
-
-
-// =============================================================================
-// 7. PARA QUE EL BOTON ABRA Y CIERRE MODAL DE IA
-// =============================================================================
-function toggleChat() {
-    const modal = document.getElementById('ia-modal');
-    if (modal.style.display === 'none' || modal.style.display === '') {
-        modal.style.display = 'flex';
-    } else {
-        modal.style.display = 'none';
+        mensajeIA.className = 'text-start mb-3 p-3 rounded-3 shadow-sm bg-light border-danger';
+        mensajeIA.innerHTML = `<b class="text-danger">Error IA:</b> ${error.message}`;
     }
+    ventanaChat.scrollTop = ventanaChat.scrollHeight;
 }
-
-// =============================================================================
-// Función para que el botón cambie de verde/gris
-// =============================================================================
-window.checkInputIA = function() {
-    const input = document.getElementById('iaInput');
-    const boton = document.getElementById('btnEnviarIA');
-    
-    if (!input || !boton) return;
-
-    if (input.value.trim().length > 0) {
-        // ACTIVADO: Verde y flecha blanca
-        boton.style.backgroundColor = "#28a745";
-        boton.style.color = "#ffffff";
-    } else {
-        // DESACTIVADO: Gris suave y flecha gris
-        boton.style.backgroundColor = "#f0f2f5";
-        boton.style.color = "#888";
-    }
-};
-
-// Modificación para que el botón vuelva a gris después de enviar
-// Buscá tu función sendIAQuery y agregá esta línea al final:
-const originalSendIAQuery = window.sendIAQuery;
-window.sendIAQuery = async function() {
-    await originalSendIAQuery();
-    // Esto limpia el botón después de mandar el mensaje
-    window.checkInputIA(); 
-};
-
