@@ -172,14 +172,27 @@ function mostrarModalAgregarEnlace() {
 
 function cerrarModalTemporal() {
     const modal = document.getElementById('contenedorModalTemporal');
-    if (modal) modal.remove();
+    if (modal) {
+        modal.remove();
+}
 }
 
 function guardarNuevoEnlace() {
-    const idDesplegable = document.getElementById('selectDesplegableDestino').value;
-    const nombre = document.getElementById('inputNombreEnlace').value.trim();
-    const url = document.getElementById('inputUrlEnlace').value.trim();
-    const etiquetas = document.getElementById('inputEtiquetasIA').value.trim();
+    // Leemos con fallback de IDs para evitar el error 'null'
+    const selectEl = document.getElementById('selectDesplegableAgregar') || document.getElementById('selectDesplegableDestino');
+    const inputNombreEl = document.getElementById('inputNombreEnlace');
+    const inputUrlEl = document.getElementById('inputUrlEnlace');
+    const inputEtiqEl = document.getElementById('inputEtiquetasEnlace') || document.getElementById('inputEtiquetasIA');
+
+    const idDesplegable = selectEl ? selectEl.value : '';
+    const nombre = inputNombreEl ? inputNombreEl.value.trim() : '';
+    const url = inputUrlEl ? inputUrlEl.value.trim() : '';
+    const etiquetas = inputEtiqEl ? inputEtiqEl.value.trim() : '';
+
+    if (!idDesplegable) {
+        alert("Por favor, seleccioná un desplegable destino.");
+        return;
+    }
 
     if (nombre && url) {
         const enlacesGuardados = JSON.parse(localStorage.getItem(idDesplegable + '_enlaces')) || [];
@@ -187,19 +200,16 @@ function guardarNuevoEnlace() {
         localStorage.setItem(idDesplegable + '_enlaces', JSON.stringify(enlacesGuardados));
         
         cerrarModalTemporal();
-        dibujarBarraNavegacion();
-        comprobarMostrarBienvenida();
 
-        // Cerrar panel lateral si está abierto
-        const panelElemento = document.getElementById('panelAdministracion');
-        const instanciaPanel = bootstrap.Offcanvas.getInstance(panelElemento);
-        if (instanciaPanel) instanciaPanel.hide();
+        if (typeof dibujarBarraNavegacion === 'function') dibujarBarraNavegacion();
+        if (typeof comprobarMostrarBienvenida === 'function') comprobarMostrarBienvenida();
+
+        mostrarNotificacionExito("¡Enlace guardado con éxito!");
 
     } else {
         alert("Por favor, completá al menos el Nombre y la URL.");
     }
 }
-
 // =============================================================================
 // 4. CREACIÓN Y EDICIÓN DE DESPLEGABLES (NUEVO MODAL PROPIO)
 // =============================================================================
@@ -207,7 +217,7 @@ function guardarNuevoEnlace() {
 // Reemplaza al prompt() nativo feo por un Modal Elegante
 function mostrarModalCrearDesplegable() {
     const contenidoModal = `
-        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 360px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;">
+        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 360px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
             <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                 <h6 class="fw-bold text-dark m-0">Crear Nuevo Desplegable</h6>
                 <button type="button" class="btn-close" onclick="cerrarModalTemporal()" aria-label="Cerrar"></button>
@@ -229,7 +239,14 @@ function mostrarModalCrearDesplegable() {
     const modal = document.createElement('div');
     modal.id = "contenedorModalTemporal";
     modal.innerHTML = contenidoModal;
-    document.body.appendChild(modal);
+
+    // Inyección dentro del panel lateral para conservar el foco del teclado
+    const panelAdmin = document.getElementById('panelAdministracion');
+    if (panelAdmin) {
+        panelAdmin.appendChild(modal);
+    } else {
+        document.body.appendChild(modal);
+    }
 }
 
 function guardarNuevoDesplegable() {
@@ -258,41 +275,47 @@ function guardarNuevoDesplegable() {
 // Modal Editar con BOTONES FORZADOS A TENER MISMA ALTURA Y ALINEACIÓN
 function mostrarModalAgregarEnlace() {
     const desplegables = obtenerDesplegables();
+    if (desplegables.length === 0) {
+        return alert("Primero debés crear un desplegable para agregar enlaces.");
+    }
+
     let opcionesSelect = '';
     desplegables.forEach(item => {
         opcionesSelect += `<option value="${item.id}">${item.nombre}</option>`;
     });
 
     const contenidoModal = `
-        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 360px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;">
+        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border text-dark" style="width: 400px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
             <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                 <h6 class="fw-bold text-dark m-0">Agregar Nuevo Enlace</h6>
                 <button type="button" class="btn-close" onclick="cerrarModalTemporal()" aria-label="Cerrar"></button>
             </div>
             
-            <div class="mb-2 text-start">
+            <div class="mb-3 text-start mt-2">
                 <label class="form-label small fw-bold mb-1 text-dark">Desplegable destino:</label>
-                <select id="selectDesplegableDestino" class="form-select form-select-sm">${opcionesSelect}</select>
+                <select id="selectDesplegableAgregar" class="form-select form-select-sm">
+                    ${opcionesSelect}
+                </select>
             </div>
-            
-            <div class="mb-2 text-start">
+
+            <div class="mb-3 text-start">
                 <label class="form-label small fw-bold mb-1 text-dark">Nombre del documento:</label>
                 <input type="text" id="inputNombreEnlace" class="form-control form-control-sm" placeholder="Ej: Manual de Usuario">
             </div>
-            
-            <div class="mb-2 text-start">
+
+            <div class="mb-3 text-start">
                 <label class="form-label small fw-bold mb-1 text-dark">Etiquetas (IA):</label>
-                <input type="text" id="inputEtiquetasIA" class="form-control form-control-sm" placeholder="Ej: Meta, chatbot, técnico">
+                <input type="text" id="inputEtiquetasEnlace" class="form-control form-control-sm" placeholder="Ej: Meta, chatbot, técnico">
             </div>
-            
+
             <div class="mb-3 text-start">
                 <label class="form-label small fw-bold mb-1 text-dark">URL del documento:</label>
                 <input type="text" id="inputUrlEnlace" class="form-control form-control-sm" placeholder="https://...">
             </div>
-            
-            <div class="d-flex justify-content-end gap-2 pt-2 border-top">
-                <button type="button" class="btn btn-secondary" onclick="cerrarModalTemporal()" style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center;">Cancelar</button>
-                <button type="button" class="btn btn-success" onclick="guardarNuevoEnlace()" style="height: 34px; padding: 0 14px; font-size: 0.875rem; display: inline-flex; align-items: center; justify-content: center;">Guardar</button>
+
+            <div class="d-flex justify-content-end align-items-center pt-2 border-top mt-3" style="gap: 8px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="cerrarModalTemporal()">Cancelar</button>
+                <button type="button" class="btn btn-success btn-sm" onclick="guardarNuevoEnlace()">Guardar</button>
             </div>
         </div>
     `;
@@ -301,7 +324,14 @@ function mostrarModalAgregarEnlace() {
     const modal = document.createElement('div');
     modal.id = "contenedorModalTemporal";
     modal.innerHTML = contenidoModal;
-    document.body.appendChild(modal);
+
+    // Inyectamos dentro del panel
+    const panelAdmin = document.getElementById('panelAdministracion');
+    if (panelAdmin) {
+        panelAdmin.appendChild(modal);
+    } else {
+        document.body.appendChild(modal);
+    }
 }
 
 function mostrarModalEditarDesplegable() {
@@ -312,7 +342,7 @@ function mostrarModalEditarDesplegable() {
     });
 
     const contenidoModal = `
-        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 380px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;">
+        <div id="ventanaModalTemporal" class="p-4 bg-white rounded-3 shadow-lg border" style="width: 380px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
             <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                 <h6 class="fw-bold text-dark m-0">Editar Desplegable</h6>
                 <button type="button" class="btn-close" onclick="cerrarModalTemporal()" aria-label="Cerrar"></button>
@@ -363,18 +393,28 @@ function mostrarModalEditarDesplegable() {
     const modal = document.createElement('div');
     modal.id = "contenedorModalTemporal";
     modal.innerHTML = contenidoModal;
-    document.body.appendChild(modal);
+
+    // EN LUGAR DE AGREGAR AL BODY, LO INSERTAMOS DENTRO DEL PANEL DE ADMINISTRACIÓN:
+    const panelAdmin = document.getElementById('panelAdministracion');
+    if (panelAdmin) {
+        panelAdmin.appendChild(modal);
+    } else {
+        document.body.appendChild(modal);
+    }
 }
 
 function cargarLienzoEdicionDesplegable(id) {
     const contenedor = document.getElementById('contenedorListaEnlacesEditar');
+    const inputNombre = document.getElementById('inputNuevoNombreDesplegable');
+
     if (!id) {
-        contenedor.innerHTML = "";
+        if (contenedor) contenedor.innerHTML = "";
+        if (inputNombre) inputNombre.value = "";
         return;
     }
 
     const desplegables = obtenerDesplegables();
-    const objetivo = desplegables.find(d => d.id === id);
+    const objetivo = desplegables.find(d => String(d.id) === String(id));
     const enlaces = JSON.parse(localStorage.getItem(id + '_enlaces')) || [];
     
     let html = "<small class='fw-bold text-muted d-block mb-1'>Enlaces cargados:</small>";
@@ -391,37 +431,67 @@ function cargarLienzoEdicionDesplegable(id) {
         });
     }
 
-    contenedor.innerHTML = html;
-    if (objetivo) document.getElementById('inputNuevoNombreDesplegable').value = objetivo.nombre;
+    if (contenedor) contenedor.innerHTML = html;
+    if (objetivo && inputNombre) {
+        inputNombre.value = objetivo.nombre;
+    }
 }
 
 function guardarCambiosDesplegable() {
-    const id = document.getElementById('selectDesplegableEditar').value;
-    const nuevoNombre = document.getElementById('inputNuevoNombreDesplegable').value.trim();
+    console.log("=== EJECUTANDO: guardarCambiosDesplegable ===");
     
-    if (!id) return alert("Seleccioná un desplegable primero.");
+    const select = document.getElementById('selectDesplegableEditar');
+    const inputNombre = document.getElementById('inputNuevoNombreDesplegable');
 
-    let desplegables = obtenerDesplegables();
-    const indice = desplegables.findIndex(d => d.id === id);
+    const id = select ? select.value : '';
+    const nuevoNombre = inputNombre ? inputNombre.value.trim() : '';
 
-    if (indice !== -1 && nuevoNombre) {
-        desplegables[indice].nombre = nuevoNombre;
-        guardarDesplegables(desplegables);
+    if (!id) {
+        alert("Seleccioná un desplegable primero.");
+        return;
     }
 
-    let enlaces = JSON.parse(localStorage.getItem(id + '_enlaces')) || [];
-    enlaces = enlaces.map((item, index) => ({
-        ...item,
-        nombre: document.getElementById(`edit-nombre-${index}`).value,
-        etiquetas: document.getElementById(`edit-etiquetas-${index}`).value
-    }));
-    
-    localStorage.setItem(id + '_enlaces', JSON.stringify(enlaces));
-    
-    cerrarModalTemporal();
-    dibujarBarraNavegacion();
-}
+    if (!nuevoNombre) {
+        alert("El nombre del desplegable no puede estar vacío.");
+        return;
+    }
 
+    // 1. Actualizar el desplegable en el array
+    let desplegables = obtenerDesplegables();
+    const indice = desplegables.findIndex(d => String(d.id) === String(id));
+
+    if (indice !== -1) {
+        desplegables[indice].nombre = nuevoNombre;
+        guardarDesplegables(desplegables);
+    } else {
+        console.error("No se encontró el desplegable con ID:", id);
+        return;
+    }
+
+    // 2. Actualizar la lista de enlaces de este desplegable
+    let enlaces = JSON.parse(localStorage.getItem(id + '_enlaces')) || [];
+    const enlacesActualizados = enlaces.map((item, index) => {
+        const elNombre = document.getElementById(`edit-nombre-${index}`);
+        const elEtiq = document.getElementById(`edit-etiquetas-${index}`);
+        return {
+            ...item,
+            nombre: elNombre ? elNombre.value.trim() : item.nombre,
+            etiquetas: elEtiq ? elEtiq.value.trim() : item.etiquetas
+        };
+    });
+    
+    localStorage.setItem(id + '_enlaces', JSON.stringify(enlacesActualizados));
+
+    // 3. Cerrar modal y redibujar interfaz
+    cerrarModalTemporal();
+
+    if (typeof dibujarBarraNavegacion === 'function') {
+        dibujarBarraNavegacion();
+    } else {
+        console.warn("La función dibujarBarraNavegacion() no está definida.");
+    }
+    mostrarNotificacionExito("¡Desplegable actualizado con éxito!");
+}
 function eliminarDesplegableSeleccionado() {
     const id = document.getElementById('selectDesplegableEditar').value;
     if (!id) return alert("Seleccioná un desplegable para eliminar.");
@@ -569,6 +639,14 @@ async function enviarConsultaIA() {
                         2. Divide la información en frases cortas.
                         3. Para enlaces usa este formato: <a href="#" onclick="cargarDocumentoEnVisor('URL_DEL_DOC'); return false;">NOMBRE_DEL_DOC</a>
 
+                        INSTRUCCIONES SOBRE GOOGLE DRIVE:
+                        Si el usuario pregunta cómo agregar un PDF/documento de Google Drive o menciona problemas de acceso/error 403:
+                        1. Explicar que debe ir a Google Drive, hacer clic en "Compartir" y cambiar el acceso general a "Cualquier persona con el enlace" en modo Lector.
+                        2. Aclarar que NO use enlaces de carpetas (/folders/). Debe ser el enlace directo del archivo.
+                        3. Explicar que debe cambiar el final de la URL reemplazando '/view' (y sus parámetros) por '/preview'.
+                           Ejemplo: cambiar https://drive.google.com/file/d/ID/view?usp=sharing por https://drive.google.com/file/d/ID/preview
+                        4. Indicar que pegue la URL modificada con '/preview' en "Panel de Control" > "Agregar Enlace".
+
                         Contexto actual del sistema:
                         ${contextoActual}
 
@@ -598,4 +676,33 @@ async function enviarConsultaIA() {
         mensajeIA.innerHTML = `<b class="text-danger">Error IA:</b> ${error.message}`;
     }
     ventanaChat.scrollTop = ventanaChat.scrollHeight;
+}
+
+//=========================
+//notificaciones exitosas
+//=========================
+function mostrarNotificacionExito(mensaje) {
+    // Removemos notificaciones previas si quedaron en pantalla
+    const notifPrevia = document.getElementById('notificacionToast');
+    if (notifPrevia) notifPrevia.remove();
+
+    const notificacion = document.createElement('div');
+    notificacion.id = 'notificacionToast';
+    notificacion.className = 'alert alert-success shadow-lg d-flex align-items-center position-fixed top-0 start-50 translate-middle-x mt-4 py-2 px-4';
+    notificacion.style.zIndex = '99999';
+    notificacion.style.borderRadius = '10px';
+    
+    notificacion.innerHTML = `
+        <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+        <span>${mensaje}</span>
+    `;
+
+    document.body.appendChild(notificacion);
+
+    // Se auto-elimina suavemente a los 3 segundos
+    setTimeout(() => {
+        notificacion.style.transition = 'opacity 0.5s ease';
+        notificacion.style.opacity = '0';
+        setTimeout(() => notificacion.remove(), 500);
+    }, 3000);
 }
