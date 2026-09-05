@@ -706,3 +706,31 @@ function mostrarNotificacionExito(mensaje) {
         setTimeout(() => notificacion.remove(), 500);
     }, 3000);
 }
+
+//===================
+//EDICION EN DRIVE
+//===================
+function cargarDocumentoEnVisor(urlOriginal) {
+    const iframe = document.getElementById('visorDocumentos');
+    const btnEditar = document.getElementById('btnEditarDrive');
+    const barraAcciones = document.getElementById('barraAccionesVisor');
+
+    if (!iframe) return;
+
+    // 1. Convertir a /preview para el iframe
+    const urlPreview = typeof formatearUrlParaIframe === 'function' 
+        ? formatearUrlParaIframe(urlOriginal) 
+        : urlOriginal;
+
+    iframe.src = urlPreview;
+
+    // 2. Controlar visibilidad del botón de edición
+    if (urlOriginal && urlOriginal.includes('drive.google.com')) {
+        const urlEdicion = urlOriginal.replace(/\/(preview|view).*/, '/edit');
+        if (btnEditar) btnEditar.href = urlEdicion;
+        if (barraAcciones) barraAcciones.classList.remove('d-none');
+        if (barraAcciones) barraAcciones.style.setProperty('display', 'flex', 'important');
+    } else {
+        if (barraAcciones) barraAcciones.style.setProperty('display', 'none', 'important');
+    }
+}
